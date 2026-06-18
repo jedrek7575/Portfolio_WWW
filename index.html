@@ -518,11 +518,13 @@
             top: 50%;
             right: 0;
             width: 250px;
-            height: 100vh;
+            height: 90vh;
             transform: translate(100%, -50%);
             background-color: var(--bg-panel);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-left: 2px solid var(--accent-bordeaux);
+            border-top: 2px solid var(--accent-bordeaux);
+            border-bottom: 2px solid var(--accent-bordeaux);
             border-right: none;
             border-radius: 12px 0 0 12px;
             box-shadow: -5px 0 20px rgba(0, 0, 0, 0.4);
@@ -582,11 +584,20 @@
     display: flex;
     flex-direction: column;
     padding: 2rem 1.5rem;
-    gap: 3.5rem;
-    height: 100vh;       /* Upewnij się, że zajmuje całą wysokość rodzica */
-    align-items: start; /* Zostawiamy 'start' jeśli chcesz, żeby linki były wyrównane do lewej strony menu */
-    
+    gap: 1.5rem;          /* Zmniejszyłem gap dla lepszego balansu */
+    height: 100%;
+    justify-content: start; /* To wyśrodkuje całą grupę (język + linki) w pionie */
+    align-items: center;    /* Opcjonalnie: wyśrodkuje linki w poziomie, jeśli chcesz */
     width: 100%;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;          /* Odstępy między linkami */
+    width: 100%;
+    height: auto;         /* Kluczowe: niech wysokość dopasuje się do zawartości */
+    justify-self: center;
 }
 
         .side-menu a {
@@ -626,8 +637,8 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-top: 10%;
-            margin-bottom: 80%;
+            margin-top: 5%;
+            
 
         }
 
@@ -1383,6 +1394,8 @@
                     </div>
                 </div>
 
+                <div class="nav-links">
+                <div style="height: 2px; width: 100%; background-color: var(--accent-bordeaux);"></div>
 
                 <a href="#" class="active">
                     <span class="icon"> <img src="Logo/android-chrome-192x192.png" alt="Logo Jakub Jąderko"> </span>
@@ -1392,8 +1405,8 @@
                     <span class="icon"> <img src="Logo/Icons/mlogistyk-192x192.png" alt="mLogistyk ikona"> </span>
                     <span class="text">_mLogistyk</span>
                 </a>
-
-               
+                <div style="height: 2px; width: 100%; background-color: var(--accent-bordeaux);"></div>
+               </div>
             </nav>
         </div>
 
