@@ -1,0 +1,1955 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jakub Jąderko | Web Development & Data Solutions</title>
+
+    <link rel="icon" href="/Logo/favicon.ico" sizes="any">
+    <link rel="icon" href="/Logo/favicon-32x32.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="/Logo/favicon-16x16.png" type="image/png" sizes="16x16">
+    <link rel="apple-touch-icon" href="/Logo/apple-touch-icon.png">
+    <link rel="icon" href="/Logo/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" href="/Logo/android-chrome-512x512.png" sizes="512x512">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0c;
+            --bg-panel: #1d1d28f1;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent-bordeaux: #b50006;
+            --accent-hover: #d00000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .app-layout {
+            display: flex;
+            width: 100%;
+            flex: 1; /* Wypełnia przestrzeń nad stopką */
+        }
+
+        /* --- LEWA STRONA (Sidebar) --- */
+        .sidebar {
+            width: 35%;
+            height: 100vh;
+            background-color: var(--bg-panel);
+            position: sticky;
+            top: 0;
+            left: 0;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0px 0 30px rgba(255, 0, 0, 0.5);
+            z-index: 999;
+            overflow: hidden; /* Odcina formularz, gdy ten wyjeżdża w lewo */
+        }
+
+        /* --- KRAWĘDZIE SIDEBARU (Technologiczne narożniki) --- */
+        .sidebar::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: 
+                linear-gradient(to top, var(--accent-bordeaux) 0%, transparent 100%) bottom left / 4px 75% no-repeat,
+                linear-gradient(to bottom, var(--accent-bordeaux) 0%, transparent 100%) top right / 4px 75% no-repeat;
+            z-index: 20; /* Zawsze nad obiema warstwami */
+        }
+
+        .sidebar::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: 
+                linear-gradient(to right, var(--accent-bordeaux) 0%, transparent 100%) bottom left / 75% 4px no-repeat,
+                linear-gradient(to left, var(--accent-bordeaux) 0%, transparent 100%) top right / 75% 4px no-repeat;
+            z-index: 20;
+        }
+
+        /* --- PRZYCISK ZWIJANIA --- */
+        .sidebar-toggle {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            color: var(--text-muted);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 30; /* Zawsze klikalny, najwyżej */
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            color: var(--accent-bordeaux);
+            border-color: var(--accent-bordeaux);
+            background-color: rgba(181, 0, 6, 0.05);
+        }
+
+        .sidebar-toggle svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        /* Obrót strzałki po kliknięciu */
+        .sidebar.collapsed .sidebar-toggle svg {
+            transform: rotate(180deg);
+        }
+
+        /* --- ZARZĄDZANIE WIDOKAMI (EFEKT NAKŁADKI) --- */
+        .sidebar-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* Płynna krzywa przyspieszenia - rusza szybko, ląduje gładko */
+            transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.6s ease;
+        }
+
+        .sidebar-view p {
+            font-weight: 900;
+            font-size: 1.2rem !important;
+        }
+
+        /* WIDOK 2: WIZYTÓWKA (Czeka na samym dole) */
+        .profile-view {
+            z-index: 1;
+            background-color: var(--bg-panel);
+            /* Lekko zmniejszona i wyblakła dopóki jest zakryta */
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            align-items: center;
+            text-align: center;
+            justify-content: space-between;
+        }
+
+        /* Gdy zwińmy formularz, wizytówka łapie ostrość */
+        .sidebar.collapsed .profile-view {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* WIDOK 1: FORMULARZ (Leży na wierzchu) */
+        .form-view {
+            z-index: 2;
+            background-color: var(--bg-panel); /* Kryje to co pod spodem */
+            border-right: 2px solid var(--accent-bordeaux);
+            transform: translateX(0);
+        }
+
+        /* Efekt Zsuwania: formularz wyjeżdża całkowicie w lewo! */
+        .sidebar.collapsed .form-view {
+            transform: translateX(-100%);
+        }
+
+        /* --- STYLIZACJA TEKSTÓW WIDOKÓW --- */
+        .form-view h2 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            padding-right: 3rem; /* Żeby napis nie wchodził pod przycisk */
+        }
+
+        .form-view p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* --- ZAKTUALIZOWANY, MROCZNY FORMULARZ --- */
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group label {
+            position: relative;
+            font-weight: 900;
+        }
+
+        /* --- KRAWĘDZIE SIDEBARU (Technologiczny narożnik - TYLKO prawy górny) --- */
+        .input-group::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            /* Pionowa linia zjeżdżająca w dół z prawego górnego rogu */
+            background: linear-gradient(to bottom, var(--accent-bordeaux) 0%, transparent 100%) top right / 4px 75% no-repeat;
+            z-index: 20; /* Zawsze nad obiema warstwami */
+        }
+
+        .input-group::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            /* Pozioma linia idąca w lewo z prawego górnego rogu */
+            background: linear-gradient(to left, var(--accent-bordeaux) 0%, transparent 100%) top right / 75% 4px no-repeat;
+            z-index: 20;
+        }
+
+        .contact-form input, 
+        .contact-form textarea {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background-color: rgba(0, 0, 0, 0.25); /* Ciemne tło */
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            resize: vertical;
+        }
+
+        .contact-form input::placeholder, 
+        .contact-form textarea::placeholder {
+            color: rgba(148, 163, 184, 0.5);
+            transition: opacity 0.3s ease;
+        }
+
+        .contact-form input:focus, 
+        .contact-form textarea:focus {
+            outline: none;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.05);
+            border-bottom: 2px solid var(--accent-bordeaux);
+            box-shadow: 0 10px 20px -10px rgba(181, 0, 6, 0.2);
+        }
+
+        .contact-form input:focus::placeholder, 
+        .contact-form textarea:focus::placeholder {
+            opacity: 0;
+        }
+
+        /* --- KONTENER CHECKBOXA --- */
+        .privacy-checkbox {
+            display: flex;
+            align-items: center; /* Trzyma tekst i kwadracik w jednej linii */
+            justify-content: start;
+            gap: 0.8rem; /* Odstęp między boxem a tekstem */
+            font-size: 1rem; /* Zwiększono odrobinę dla czytelności */
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* --- WŁASNY, TECHNOLOGICZNY KWADRACIK --- */
+        .privacy-checkbox input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(0, 0, 0, 0.4); /* Ciemne tło */
+            border: 1px solid rgba(255, 255, 255, 0.15); /* Delikatna ramka */
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0; /* Zapobiega zgnieceniu kwadracika, gdy tekst ma 2 linijki */
+        }
+
+        /* Reakcja na najechanie */
+        .privacy-checkbox input[type="checkbox"]:hover {
+            border-color: var(--accent-bordeaux);
+            box-shadow: 0 0 10px rgba(181, 0, 6, 0.2);
+        }
+
+        /* Stan ZAZNACZONY */
+        .privacy-checkbox input[type="checkbox"]:checked {
+            background-color: var(--accent-bordeaux);
+            border-color: var(--accent-bordeaux);
+            box-shadow: 0 0 15px rgba(181, 0, 6, 0.4); /* Cyberpunkowy poblask */
+        }
+
+        /* "Ptaszek" (checkmark) narysowany w CSS */
+        .privacy-checkbox input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute; /* Konieczne do wyśrodkowania wewnątrz kwadracika */
+            top: 45%; /* Lekko podciągnięte do góry, bo ogonek ptaszka ciągnie w dół */
+            left: 50%;
+            
+            /* Maksymalne optymalne wymiary dla ramki 20x20px (po obrocie) */
+            width: 7px;
+            height: 13px;
+            
+            /* Delikatnie czerwonawy, wpadający w biel odcień */
+            border: solid #ffc2c2; 
+            border-width: 0 2px 2px 0; /* Grubość linii ptaszka */
+            
+            /* Magia środkowania i obrotu */
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        /* Aby kliknięcie w sam tekst też działało wygodnie */
+        .privacy-checkbox label {
+            cursor: pointer;
+            line-height: 1.4;
+        }
+
+        /* --- STYLIZACJA LINKU DO POLITYKI --- */
+        .privacy-checkbox a {
+            color: var(--text-main);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--accent-bordeaux); /* Przerywana linia jest bardziej pro */
+            font-family: 'JetBrains Mono', monospace; /* Technologiczny smaczek */
+            transition: all 0.3s ease;
+        }
+
+        .privacy-checkbox a:hover {
+            color: var(--accent-bordeaux);
+            border-bottom: 1px solid var(--accent-bordeaux); /* Po najechaniu linia staje się ciągła */
+            text-shadow: 0 0 8px rgba(181, 0, 6, 0.4);
+        }
+
+        .contact-form button {
+            background-color: transparent;
+            color: var(--accent-bordeaux);
+            border: 1px solid var(--accent-bordeaux);
+            padding: 1rem;
+            font-weight: 900;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 1px;
+            margin-top: 0.9rem;
+            font-size: 1.3rem;
+        }
+
+        .contact-form button:hover {
+            background-color: var(--accent-bordeaux);
+            color: white;
+            box-shadow: 0 0 20px rgba(181, 0, 6, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* --- STYLIZACJA WIZYTÓWKI --- */
+        .profile-logo img {
+            width: 40px;
+            opacity: 0.5;
+            margin-bottom: 2rem;
+            z-index: 0;
+        }
+
+        .profile-image-container {
+            position: absolute;
+            width: auto;
+            height: auto;
+            bottom: -10%;
+            left: 0;
+            margin: 0 0 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .profile-image-container:hover {
+            transform: scale(102%);
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* drop-shadow(offset-x | offset-y | blur-radius | color) */
+            filter: drop-shadow(0px 0px 10px red);
+        }
+
+        .profile-text {
+            z-index: 100;
+            
+            /* Kolor tła z przezroczystością (wersja z białym szkłem) */
+            background: rgba(95, 95, 95, 0.2);
+            
+            /* Klucz do efektu szkła – rozmycie tła za elementem */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px); /* Wsparcie dla Safari */
+            
+            /* Zaokrąglenie rogów */
+            border-radius: 20px;
+            
+            /* Padding dla estetyki */
+            padding: 20px;
+            margin-top: 7%;
+        }
+
+        /* --- KRAWĘDZIE SIDEBARU (Technologiczne narożniki) --- */
+        .profile-text::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: 
+                /* Lewy górny róg - pionowa kreska */
+                linear-gradient(to bottom, var(--accent-bordeaux) 0%, transparent 100%) top left / 4px 75% no-repeat,
+                /* Prawy dolny róg - pionowa kreska */
+                linear-gradient(to top, var(--accent-bordeaux) 0%, transparent 100%) bottom right / 4px 75% no-repeat;
+            z-index: 20;
+        }
+
+        .profile-text::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: 
+                /* Lewy górny róg - pozioma kreska */
+                linear-gradient(to right, var(--accent-bordeaux) 0%, transparent 100%) top left / 75% 4px no-repeat,
+                /* Prawy dolny róg - pozioma kreska */
+                linear-gradient(to left, var(--accent-bordeaux) 0%, transparent 100%) bottom right / 75% 4px no-repeat;
+            z-index: 20;
+        }
+
+        .profile-text h1 {
+            font-size: 1.5rem;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .profile-text h1 span {
+            font-size: 1rem;
+            color: rgb(255, 82, 82);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 900;
+        }
+
+        .profile-text p {
+            font-size: 4vh;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        /* --- RWD: Zabezpieczenie dla Smartfonów (Z GRIDEM) --- */
+        @media (max-width: 968px) {
+            .sidebar {
+                width: 100%;
+                /* KLUCZOWE: Wracamy do auto! Pozwalamy panelowi rosnąć wraz z formularzem */
+                height: auto; 
+                min-height: 100vh; /* Upewniamy się, że zawsze zajmie minimum cały ekran telefonu */
+                position: relative;
+                padding: 0; 
+                overflow: hidden;
+                
+                /* MAGIA GRIDA: Używamy siatki do nałożenia na siebie kart */
+                display: grid; 
+            }
+            
+            /* 1. STRZAŁKA */
+            .sidebar-toggle {
+                display: flex; 
+                top: 2.5rem;
+                right: 2.5rem;
+                z-index: 50; 
+            }
+            
+            /* 2. NAPRAWA NAKŁADANIA SIĘ WARSTW */
+            .sidebar-view {
+                /* USUWAMY position: absolute; */
+                position: relative; 
+                width: 100%;
+                /* Obie karty lądują w pierwszym wierszu i pierwszej kolumnie grida */
+                grid-column: 1; 
+                grid-row: 1;    
+                
+                /* Powiększony padding z góry (5rem), żeby tekst nie wchodził pod strzałkę! */
+                padding: 5rem 1.5rem 3rem 1.5rem; 
+                min-height: 100vh; 
+                align-self: center; /* Wyśrodkowanie pionowe zawartości */
+            }
+
+            /* Animacja odjeżdżania działa tu bez zmian */
+            .sidebar.collapsed .form-view {
+                transform: translateX(-100%);
+            }
+
+            /* 3. WIZYTÓWKA */
+            .profile-view {
+                display: flex; 
+                min-height: 100vh;
+            }
+
+            /* 4. KOREKTY KOSMETYCZNE WIZYTÓWKI */
+            .profile-text {
+                margin-top: 0.2rem;
+                margin-bottom: -17rem;
+            }
+
+            .profile-text h1 {
+                font-size: 1.2rem;
+            }
+
+            .profile-text p {
+                font-size: 1rem; 
+            }
+
+            .profile-image-container {
+                position: relative; /* Zmieniamy na relative, żeby lepiej się układało na telefonie */
+                bottom: 0;
+                left: 10%;
+                width: 150%;
+                max-width: 1000px; /* Zabezpieczenie przed gigantycznym zdjęciem */
+            }
+        }
+
+        /* --- EKRAN SUKCESU (OVERLAY) --- */
+        .success-overlay {
+            position: absolute;
+            inset: 0; /* Rozciąga się na cały widok formularza */
+            background-color: var(--bg-panel);
+            backdrop-filter: blur(10px);
+            z-index: 25; /* Przykrywa formularz, ale jest POD przyciskiem zwijania (z-index: 30) */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 3rem;
+            
+            /* Domyślnie ukryty */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .success-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Animowane czerwone kółko */
+        .success-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 3px solid var(--accent-bordeaux);
+            position: relative;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 30px rgba(181, 0, 6, 0.4);
+            transform: scale(0);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efekt sprężynowania */
+        }
+
+        .success-overlay.active .success-circle {
+            transform: scale(1);
+        }
+
+        /* Ptaszek wewnątrz kółka */
+        .success-circle::after {
+            content: '';
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            width: 18px;
+            height: 35px;
+            border: solid #ffc2c2; /* Taki sam jak w checkboxie */
+            border-width: 0 4px 4px 0;
+            transform: translate(-50%, -50%) rotate(45deg);
+            opacity: 0;
+            transition: opacity 0.3s ease 0.4s; /* Pojawia się chwilę po rozwinięciu kółka */
+        }
+
+        .success-overlay.active .success-circle::after {
+            opacity: 1;
+        }
+
+        /* Tekst podziękowania */
+        .success-overlay p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            line-height: 1.6;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+        }
+
+        .success-overlay.active p {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- PŁYWAJĄCA NAWIGACJA --- */
+        .floating-nav-container {
+            position: fixed;
+            top: 50%;
+            right: -175px;
+            width: 250px;
+            height: 100vh;
+            transform: translateY(-50%);
+            background-color: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-left: 2px solid var(--accent-bordeaux);
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+            box-shadow: 0px 0 30px rgba(255, 0, 0, 0.5);
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999999;
+            display: flex;
+            justify-content: start;
+            align-items: start;
+        }
+
+        .floating-nav-container.active {
+            right: 0;
+        }
+
+        .nav-arrow {
+            position: absolute;
+            left: -48px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 60px;
+            background-color: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            color: var(--accent-bordeaux);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s, color 0.3s;
+            animation: pulseArrow 2s infinite; 
+        }
+
+        .nav-arrow:hover {
+            background-color: #1a1a1e;
+            color: var(--accent-hover);
+        }
+
+        .nav-arrow svg {
+            width: 24px;
+            height: 24px;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .floating-nav-container.active .nav-arrow svg {
+            transform: rotate(180deg);
+        }
+
+        @keyframes pulseArrow {
+            0% { box-shadow: -2px 0 5px rgba(157, 2, 8, 0); }
+            50% { box-shadow: -5px 0 15px rgba(157, 2, 7, 0.679); }
+            100% { box-shadow: -2px 0 5px rgba(157, 2, 8, 0); }
+        }
+
+        .side-menu {
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            gap: 3.5rem;
+            height: 100%;
+            align-items: start;
+            justify-content: start;
+        }
+
+        .side-menu a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        .side-menu a:hover,
+        .side-menu a.active {
+            color: var(--accent-bordeaux);
+            transform: translateX(5px);
+        }
+
+        .side-menu .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            opacity: 0.8;
+            margin-right: 10%;
+        }
+
+        .icon img {
+            width: 55px;
+        }
+
+        /* --- PRZEŁĄCZNIK JĘZYKÓW --- */
+        .lang-switcher-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: auto;
+            justify-self: end !important;
+            
+        }
+
+        .lang-switcher-container .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            opacity: 0.8;
+            margin-right: 10%;
+            color: var(--text-muted);
+        }
+
+        .lang-switcher-container .icon svg {
+            width: 24px;
+            height: 24px;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+
+
+        .lang-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted);
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            color: var(--accent-bordeaux);
+            border-color: var(--accent-bordeaux);
+            background: rgba(181, 0, 6, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* --- PRAWA STRONA (Treść z przewijaniem) --- */
+        .main-content {
+            width: 65%; /* Reszta szerokości ekranu */
+            position: relative;
+        }
+
+        /* --- ZARZĄDZANIE WARSTWAMI (H1 nad paragrafem) --- */
+        .hero-title {
+            position: relative;
+            z-index: 2; /* H1 musi być wyżej, żeby P wyjechało "spod" niego */
+        }
+
+        /* --- ANIMACJA WYŁANIANIA (Świtezianka z jeziora) --- */
+        .hero-title .line-wrapper {
+            display: block;
+            overflow: hidden; /* To jest tafla jeziora - ukrywa tekst, gdy jest poniżej */
+        }
+
+        .hero-title .line {
+            display: block;
+            transform: translateY(110%); /* Tekst zaczyna pod "wodą" */
+            opacity: 0;
+            filter: blur(8px); /* Efekt zamazania przy wynurzaniu */
+            animation: emergeFromLake 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Opóźnienia dla każdej linii - efekt płynnej fali */
+        .hero-title .line-wrapper:nth-child(1) .line { animation-delay: 0.1s; }
+        .hero-title .line-wrapper:nth-child(2) .line { animation-delay: 0.2s; }
+        .hero-title .line-wrapper:nth-child(3) .line { animation-delay: 0.3s; }
+
+        /* --- ANIMACJA PRZYTUPU (Dla słowa kluczowego) --- */
+        .hero-content .highlight {
+            display: inline-block;
+            color: var(--accent-bordeaux);
+            font-size: 3.8rem;
+            opacity: 0;
+            transform: scale(0.5);
+            /* Czeka, aż reszta zdania się pojawi, a potem uderza */
+            animation: highlightPunch 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            animation-delay: 1.4s; 
+        }
+
+        .hero-desc-wrapper {
+            position: relative;
+            z-index: 1;
+            overflow: hidden; /* Maska ukrywająca tekst przed wyjechaniem */
+            margin-bottom: 2.5rem; /* Przenosimy margines z samego <p> tutaj */
+            padding-top: 10px; /* Robimy miejsce, by poblask się nie uciął */
+        }
+
+        .hero-content p {
+            margin-bottom: 0; 
+            transform: translateY(-100%); /* P startuje schowane "w suficie" (pod H1) */
+            opacity: 0;
+            /* Delikatny, chłodny poblask dla mniejszego tekstu */
+            text-shadow: 0 0 15px rgba(226, 232, 240, 0.3); 
+            font-size: 1.3rem !important;
+            animation: slideDownFromUnder 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 2.1s; /* Startuje idealnie, gdy kończy się "przytup" daty */
+        }
+
+        @keyframes emergeFromLake {
+            0% {
+                transform: translateY(110%) rotate(2deg);
+                opacity: 0;
+                filter: blur(8px);
+                text-shadow: 0 0 0 rgba(255, 255, 255, 0); /* Start bez poświaty */
+            }
+            100% {
+                transform: translateY(0) rotate(0);
+                opacity: 1;
+                filter: blur(0);
+                /* Zakończenie z elegancką, białą poświatą */
+                text-shadow: 0 0 25px rgba(255, 255, 255, 0.4); 
+            }
+        }
+
+        @keyframes highlightPunch {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+                filter: blur(4px);
+            }
+            70% {
+                transform: scale(1.1);
+                opacity: 1;
+                filter: blur(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0);
+                /* Wzmocniony czerwony poblask dla przytupu */
+                text-shadow: 0px 0px 30px rgba(157, 2, 8, 0.7); 
+            }
+        }
+
+        /* Nowa animacja: wysunięcie z góry na dół z rozmyciem */
+        @keyframes slideDownFromUnder {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+                filter: blur(4px);
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        /* --- SEKCJA HERO Z WIDEO --- */
+        .hero-video-section {
+            position: sticky; /* Zatrzymuje sekcję przy scrollowaniu */
+            top: 0;
+            height: 100vh; 
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: hidden;
+            z-index: 0; /* Znajduje się na samym dole */
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            backdrop-filter: blur(14px);
+            background-color: rgba(0, 3, 23, 0.697);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 4rem;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .hero-content .highlight {
+            color: var(--accent-bordeaux);
+            font-size: 3.8rem;
+        }
+
+        h2 .highlight {
+            color: var(--accent-bordeaux);
+            font-size: 1.6rem;
+        }
+
+        .highlight-p {
+            color: var(--accent-bordeaux);
+            font-weight: 900 !important;
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            color: #e2e8f0;
+            max-width: 650px;
+            margin-bottom: 2.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .primary-btn {
+            display: inline-block; /* Dodane, aby link zachowywał się jak przycisk */
+            text-decoration: none;  /* Dodane, aby usunąć podkreślenie tekstu */
+            background-color: var(--accent-bordeaux);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .primary-btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        /* --- SEKCJA NASUWAJĄCA SIĘ (USŁUGI) --- */
+        .services {
+            background-color: var(--bg-dark); /* Czarne tło przykrywające wideo */
+            position: relative;
+            z-index: 2; /* Wyższy z-index sprawia, że nasuwa się na hero */
+            padding: 4rem;
+            min-height: 100vh; /* Zapewnia dużo miejsca na scroll */
+            border-top: 1px solid rgba(255,255,255,0.05); /* Delikatna linia oddzielająca */
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .service-card {
+            background-color: var(--bg-panel);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-bordeaux);
+        }
+
+        .service-card h3 {
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-main);
+        }
+
+        .service-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* --- RWD - Dla urządzeń mobilnych --- */
+        @media (max-width: 968px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative; /* Na mobile pasek boczny staje się zwykłym elementem */
+                padding: 2rem;
+                order: 2; 
+            }
+            .main-content {
+                width: 100%;
+                order: 1; 
+            }
+            .services {
+                padding: 2rem;
+            }
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-content {
+                padding: 2rem;
+            }
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+            /* --- PŁYWAJĄCA NAWIGACJA --- */
+            .floating-nav-container {
+                position: fixed;
+                top: 50%;
+                right: -240px;
+                width: 250px;
+                height: 100vh;
+                transform: translateY(-50%);
+                background-color: var(--bg-panel);
+                border-left: 2px solid var(--accent-bordeaux);
+                border-right: none;
+                border-radius: 12px 0 0 12px;
+                box-shadow: 0px 0 30px rgba(255, 0, 0, 0.5);
+                transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 1000;
+                display: flex;
+                justify-content: start;
+                align-items: start;
+            }
+        }
+
+        /* --- NOWA SEKCJA STORYTELLINGU --- */
+        .story-section {
+            background-color: var(--bg-dark);
+            position: relative;
+            z-index: 2;
+            /* TOP, RIGHT (miejsce na nawigację!), BOTTOM, LEFT */
+            padding: 6rem 120px 6rem 4rem; 
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .story-header {
+            margin-bottom: 5rem;
+            max-width: 800px;
+        }
+
+        .story-header h2 {
+            font-size: 2.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+        }
+
+        .story-header p {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .highlight-text {
+            color: var(--text-muted);
+            text-decoration: line-through;
+            text-decoration-color: var(--accent-bordeaux);
+        }
+
+        /* --- ELASTYCZNE KONTENERY (ZACHODZĄCE NA SIEBIE) --- */
+        .feature-block {
+            display: flex;
+            align-items: flex-start; /* Zapobiega rozciąganiu; tekst zajmie na wysokość tylko tyle, ile potrzebuje */
+            justify-content: space-between;
+            margin-bottom: 6rem; /* Zwiększony margines, bo elementy są wyższe/nachodzą */
+            position: relative;
+        }
+
+        /* Kontener Tekstu (Zawsze na górze, z własną ramką) */
+        .feature-content {
+            width: 45%; 
+            background-color: var(--bg-panel);
+            border: 1px solid rgba(166, 5, 5, 0.743); /* Własna, delikatna ramka */
+            border-radius: 12px;
+            padding: 3rem;
+            position: relative;
+            z-index: 2; /* Wypycha tekst nad zdjęcie */
+            height: fit-content; /* Przyjmuje wysokość zgodną z zawartością */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); /* Głęboki cień, by odciąć tekst od zdjęcia */
+        }
+
+        /* Kontener Zdjęcia (Opuszczony, pod tekstem, z czerwoną ramką) */
+        .feature-poc {
+            width: 65%;
+            margin-left: -10%; /* ZACHODZENIE: Wciąga zdjęcie w lewo, pod tekst (45% + 65% - 10% = 100%) */
+            margin-top: 4rem; /* Opuszcza zdjęcie, dzięki czemu tekst zaczyna się wyżej */
+            border: 1px solid var(--accent-bordeaux); /* Ładna, czerwona ramka */
+            background-color: rgba(181, 0, 6, 0.03); /* Delikatne tło */
+            border-radius: 12px;
+            padding: 0.5rem; /* Odstęp między ramką a właściwym obrazkiem (opcjonalny, elegancki efekt) */
+            position: relative;
+            z-index: 1; /* Pozostaje pod tekstem */
+            box-shadow: 0 0 25px rgba(181, 0, 6, 0.1); /* Czerwona poświata wokół kontenera */
+            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.3s ease;
+        }
+
+        /* Ożywienie zdjęcia przy najechaniu myszką na całą sekcję */
+        .feature-block:hover .feature-poc {
+            box-shadow: 0 0 40px rgba(181, 0, 6, 0.25);
+            border-color: var(--accent-hover);
+            transform: translateY(-5px);
+        }
+
+        /* Wewnętrzne elementy we feature-content (bez zmian) */
+        .feature-block .highlight {
+            color: var(--accent-bordeaux);
+            font-size: 1.2rem;
+            font-weight: 900 !important;
+        }
+
+        .story-header .highlight {
+            color: var(--accent-bordeaux);
+            font-size: 1.2rem;
+            font-weight: 900 !important;
+        }
+
+        .feature-content h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-content p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        /* --- ODWRÓCONY UKŁAD (Klasa .reverse) --- */
+        .feature-block.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .feature-block.reverse .feature-poc {
+            margin-left: 0;
+            margin-right: -10%; /* Zachodzenie z drugiej strony, gdy tekst jest po prawej */
+        }
+
+        .feature-content {
+            flex: 1;
+        }
+
+        .feature-content h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-content p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        .feature-poc {
+            flex: 1;
+            width: 100%;
+            overflow: hidden; /* Zabezpieczenie dla za dużych zdjęć */
+            border-radius: 8px;
+        }
+
+        /* --- KARUZELA PROOF OF CONCEPT (CSS ONLY) --- */
+        .css-carousel {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory; /* Magnetyczne przyciąganie slajdów */
+            padding-bottom: 1rem;
+            /* Stylowanie paska przewijania */
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-bordeaux) rgba(255,255,255,0.05);
+        }
+
+        .carousel-slide, .poc-static {
+            flex: 0 0 100%; /* Każdy slajd zajmuje 100% szerokości kontenera */
+            background-color: #111116; /* Ciemniejsze tło zastępcze */
+            border: 1px dashed rgba(255,255,255,0.1);
+            border-radius: 8px;
+            scroll-snap-align: center; /* Punkt magnetyczny */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Miejsce na Twoje grafiki do czasu ich wstawienia */
+        .poc-placeholder {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+        }
+
+        .poc-placeholder {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .poc-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Skaluje w dół, aż całe zdjęcie zmieści się w ramce */
+            object-position: center; 
+            border-radius: 8px;
+        }
+
+        /* --- SEKCJA 2 --- */
+        .story-section-2 {
+            background-color: var(--bg-dark);
+            position: relative;
+            z-index: 2;
+            /* TOP, RIGHT (miejsce na nawigację!), BOTTOM, LEFT */
+            padding: 6rem 120px 2rem 4rem; 
+            border-top: 2px solid var(--accent-bordeaux);
+            filter: drop-shadow(0px 0px 20px red);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .story-header-2 {
+            max-width: 800px;
+            position: relative;
+            z-index: 1000;
+
+            /* Kolor tła z przezroczystością (wersja z białym szkłem) */
+            background: #1d1d288a;
+            
+            /* Klucz do efektu szkła – rozmycie tła za elementem */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px); /* Wsparcie dla Safari */
+            
+            /* Zaokrąglenie rogów */
+            border-radius: 20px;
+            
+            align-self: flex-start;
+            justify-self: end;
+            /* Padding dla estetyki */
+            padding: 20px;
+        }
+
+        /* --- KRAWĘDZIE SIDEBARU (Technologiczne narożniki) --- */
+        .story-header-2::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: 
+                /* Lewy górny róg - pionowa kreska */
+                linear-gradient(to bottom, var(--accent-bordeaux) 0%, transparent 100%) top left / 4px 75% no-repeat,
+                /* Prawy dolny róg - pionowa kreska */
+                linear-gradient(to top, var(--accent-bordeaux) 0%, transparent 100%) bottom right / 4px 75% no-repeat;
+            z-index: 20;
+        }
+
+        .story-header-2::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: 
+                /* Lewy górny róg - pozioma kreska */
+                linear-gradient(to right, var(--accent-bordeaux) 0%, transparent 100%) top left / 75% 4px no-repeat,
+                /* Prawy dolny róg - pozioma kreska */
+                linear-gradient(to left, var(--accent-bordeaux) 0%, transparent 100%) bottom right / 75% 4px no-repeat;
+            z-index: 20;
+        }
+
+        .story-header-2 .highlight {
+            color: red;
+            font-size: 1.2rem;
+            font-weight: 900 !important;
+        }
+
+        .story-header-2 h2 {
+            font-size: 2.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+        }
+
+        .story-header-2 p {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-main);
+            font-size: 1.2rem;
+            font-weight: 900;
+        }
+
+        .story-header-2-img {
+            position: absolute;
+            top: -15%;
+            right: -9%;
+            z-index: 0;
+        }
+
+        .story-header-2-img img {
+            height: 960px;
+            width: 960px;
+            /* Wartości: przesunięcie X, przesunięcie Y, rozmycie, kolor */
+        }
+
+        @media (max-width: 968px) {
+            /* 1. Korekta głównego kontenera (mniejsze paddingi dla mobile) */
+            .story-section-2 {
+                padding: 4rem 1.5rem 2rem 1.5rem; 
+                justify-content: center; /* Lepiej wyśrodkować na mobile */
+                align-items: center;
+            }
+
+            /* 2. ZDJĘCIE (wymuszone na górze) */
+            .story-header-2-img {
+                position: relative;
+                top: 0;
+                right: 0;
+                order: 1; /* Ustawia element jako pierwszy */
+                z-index: 1;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+
+            .story-header-2-img img {
+                width: 150%; /* Wypełnia dostępną przestrzeń */
+                max-width: 800px; /* Zabezpieczenie przed zbytnim rozciągnięciem */
+                height: auto; /* Zachowuje proporcje zdjęcia */
+                /* Jeśli nadal chcesz tu ten czerwony cień, dopisz: filter: drop-shadow(0px 0px 15px red); */
+            }
+
+            /* 3. RAMKA Z TEKSTEM (wymuszona na dole z efektem nachodzenia) */
+            .story-header-2 {
+                order: 2; /* Ustawia element jako drugi (pod zdjęciem) */
+                align-self: center;
+                margin-top: -19rem; /* KLUCZOWE: Ujemny margines wciąga ramkę na zdjęcie */
+                z-index: 1000; /* Upewnia się, że szkło przykrywa zdjęcie */
+                width: 100%;
+                margin-bottom: 25%;
+            }
+
+            /* 4. Opcjonalna poprawka typografii dla mniejszych ekranów */
+            .story-header-2 h2 {
+                font-size: 2rem; /* Trochę mniejszy nagłówek żeby się zmieścił */
+            }
+        }
+
+        /* --- STOPKA NA CAŁĄ SZEROKOŚĆ --- */
+        /* --- PROFESJONALNA STOPKA RWD --- */
+        .site-footer {
+            width: 100%;
+            background-color: #050506;
+            border-top: 1px solid rgba(181, 0, 6, 0.3); /* Subtelniejsza linia bordowa na górze */
+            padding: 3rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 20;
+            overflow: hidden;
+        }
+
+        /* Ozdobne linie po bokach (technologiczny sznyt) */
+        .footer-decoration {
+            flex: 1;
+            height: 2px;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--accent-bordeaux) 0,
+                var(--accent-bordeaux) 10px,
+                transparent 10px,
+                transparent 20px
+            );
+            opacity: 0.15;
+        }
+
+        .left-deco {
+            margin-right: 4rem;
+        }
+
+        .right-deco {
+            margin-left: 4rem;
+        }
+
+        /* Główny kontener z treścią (środek) */
+        .footer-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        /* Efekt Hover na Logo */
+        .footer-logo img {
+            width: 60px;
+            height: auto;
+            filter: grayscale(100%) opacity(0.5); /* Domyślnie szare i lekko przezroczyste */
+            transition: filter 0.4s ease, transform 0.4s ease;
+        }
+
+        .footer-logo a:hover img {
+            filter: grayscale(0%) opacity(1); /* Pełny kolor po najechaniu */
+            transform: scale(1.05); /* Delikatne powiększenie */
+        }
+
+        /* Linki kontaktowe */
+        .footer-contact {
+            display: flex;
+            gap: 2.5rem;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-main);
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .contact-link svg {
+            width: 22px;
+            height: 22px;
+            color: var(--accent-bordeaux); /* Ikony w kolorze akcentu */
+            transition: transform 0.3s ease;
+        }
+
+        .contact-link:hover {
+            color: var(--accent-hover);
+        }
+
+        .contact-link:hover svg {
+            transform: translateY(-3px); /* Ikonka delikatnie podskakuje */
+        }
+
+        /* Sekcja dolna (Copyright i polityka) */
+        .footer-bottom {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .copyright {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0;
+        }
+
+        .legal-links {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .legal-links a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .legal-links a:hover {
+            color: var(--text-main);
+            text-decoration: underline;
+        }
+
+        .legal-links .separator {
+            margin: 0 0.5rem;
+        }
+
+        /* --- RWD dla Stopki (Mobile) --- */
+        @media (max-width: 968px) {
+            .site-footer {
+                flex-direction: column;
+                padding: 3rem 1.5rem;
+            }
+
+            /* Ukrywamy dekoracje boczne na telefonach, by oszczędzić miejsce */
+            .footer-decoration {
+                display: none; 
+            }
+
+            .footer-contact {
+                flex-direction: column; /* Linki w kolumnie jedno pod drugim */
+                gap: 1.5rem;
+            }
+
+            .contact-link {
+                font-size: 1.2rem; /* Większy tekst dla łatwiejszego klikania palcem */
+            }
+        }
+
+        /* --- POPRAWKI RWD DLA NOWEGO LAYOUTU --- */
+        @media (max-width: 968px) {
+            .app-layout {
+                flex-direction: column;
+            }
+            .story-section {
+                padding: 4rem 2rem; /* Na mobile zabieramy ten duży margines z prawej */
+            }
+            .feature-block, 
+            .feature-block.reverse {
+                flex-direction: column; /* Na mobile wszystko układa się pionowo */
+                padding: 2rem;
+            }
+            .story-header h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 968px) {
+            .feature-block, 
+            .feature-block.reverse {
+                flex-direction: column; /* Wszystko układa się pionowo */
+                margin-bottom: 4rem;
+                padding: 0; 
+            }
+            
+            .feature-content {
+                width: 100%;
+                margin-bottom: -3rem; /* Tekst najeżdża na zdjęcie z góry na dół */
+                padding: 2rem;
+            }
+
+            .feature-poc {
+                width: 100%;
+                margin-left: 0;
+                margin-right: 0;
+                margin-top: 0; /* Resetujemy margines top, zachodzenie robi bottom z tekstu */
+            }
+            
+            .feature-block.reverse .feature-poc {
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+
+    <aside class="sidebar" id="mainSidebar">
+        
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Zwiń/Rozwiń panel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+
+        <div class="sidebar-view form-view active" id="formView">
+            <h2 id="t-form-h2">Porozmawiajmy o <span class="highlight">Twoim</span> projekcie</h2>
+            <p id="t-form-p">Potrzebujesz wydajnego sklepu, aplikacji webowej lub cyfryzacji bazy danych? Zostaw wiadomość.</p>
+            
+            <form class="contact-form" onsubmit="event.preventDefault();">
+                <div class="input-group">
+                    <input type="text" id="name" placeholder=" " required>
+                    <label for="name" id="t-label-name">Imię lub nazwa firmy</label>
+                    <div class="input-line"></div>
+                </div>
+                
+                <div class="input-group">
+                    <input type="email" id="email" placeholder=" " required>
+                    <label for="email" id="t-label-email">Adres E-mail</label>
+                    <div class="input-line"></div>
+                </div>
+                
+                <div class="input-group">
+                    <textarea id="message" rows="4" placeholder=" " required></textarea>
+                    <label for="message" id="t-label-msg">Opisz krótko, czego potrzebujesz...</label>
+                    <div class="input-line"></div>
+                </div>
+
+                <div class="privacy-checkbox">
+                    <input type="checkbox" id="privacy" required>
+                    <label for="privacy" id="t-label-privacy">Akceptuję <a href="polityka-prywatnosci.html">politykę prywatności</a>.</label>
+                </div>
+
+                <button type="submit" id="t-btn-submit">_wyślij_wiadomość</button>
+            </form>
+            <div class="success-overlay" id="successOverlay">
+            <div class="success-circle"></div>
+            <p id="t-success-p">Dziękuję za wiadomość!<br><br>Skontaktuję się z Tobą tak szybko, jak to będzie możliwe.</p>
+        </div>
+        </div>
+
+        <div class="sidebar-view profile-view" id="profileView">
+
+            <div class="profile-text">
+                <h1 id="t-prof-h1">Jakub Jąderko | <span>Full-stack web developer</span></h1>
+                <p id="t-prof-p">Programista - samouk, który uważa, że szkolna ława znacznie upośledza zdolności przyjmowania wiedzy. Pracę traktuje nieomal jak pasję, a jako remedium na ból pleców spowodowany wielogodzinnymi sesjami spędzonymi przed komputerem stosuje jogę.</p>
+            </div>
+
+             <div class="profile-image-container">
+                <img src="Images/strona_glowna/deweloper2.webp" alt="Jakub Jąderko - Twórca Stron Web" class="profile-image">
+            </div>
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+        
+        <div class="floating-nav-container" id="navContainer">
+            <button class="nav-arrow" id="navToggle" aria-label="Rozwiń menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6" />
+                </svg>
+            </button>
+            
+            <nav class="side-menu">
+                <a href="#" class="active">
+                    <span class="icon"> <img src="Logo/android-chrome-192x192.png" alt=""> </span>
+                    <span class="text" id="t-nav-home">_Strona_główna</span>
+                </a>
+                <a href="https://mlogistyk.pl/">
+                    <span class="icon"> <img src="Logo/Icons/mlogistyk-192x192.png" alt="mLogistyk - prosta w obsłudze aplikacja usprawniająca dostawy "> </span>
+                    <span class="text">_mLogistyk</span>
+                </a>
+
+                <div class="lang-switcher-container">
+                    <span class="icon"> 
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        </svg>
+                    </span>
+                    <div class="lang-buttons">
+                        <button class="lang-btn active" data-lang="pl" onclick="setLang('pl')">PL</button>
+                        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+                        <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
+                    </div>
+                </div>
+
+            </nav>
+        </div>
+
+        <section class="hero-video-section">
+            <video class="hero-video" autoplay muted playsinline loop>
+                <source src="Images/Hero/mainpage.mp4" type="video/mp4">
+                Twoja przeglądarka nie obsługuje wideo.
+            </video>
+            
+            <div class="hero-overlay"></div>
+
+            <div class="hero-content">
+                <h1 class="hero-title" id="t-hero-h1">
+                    <span class="line-wrapper"><span class="line">Jak Twoja strona ma sprzedawać,</span></span>
+                    <span class="line-wrapper"><span class="line">skoro jej design zatrzymał się</span></span>
+                    <span class="line-wrapper"><span class="line">w <span class="highlight">2015 roku?</span></span></span>
+                </h1>
+                
+                <div class="hero-desc-wrapper">
+                    <p id="t-hero-desc">> Strona internetowa nie powinna być nudna. </br> Tworzę <span class="highlight-p">systemy</span> nowej generacji, które mają wyrazisty <span class="highlight-p">smak</span>.</p>
+                </div>
+                
+                <div class="hero-actions">
+                    <a href="#content" class="primary-btn" id="t-hero-btn">_wejdź_w_XXI_wiek &gt;</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="story-section" id="content">
+                
+                <div class="story-header">
+                    <h2 id="t-story1-h2">Wyjątkowe strony internetowe za <span class="highlight" style="font-size: 2.5rem;" >rozsądną</span> cenę.</h2>
+                    <p id="t-story1-p">> Staram się by każda strona stworzona przeze mnie była <span class="highlight">,,jakaś"</span>.</br> Każdorazowo celuję w unikalny klimat, który warto <span class="highlight">zapamiętać</span>.</br>Mój największy wróg? <span class="highlight">Nijakość</span>. </p>
+                </div>
+
+                <article class="feature-block">
+                    <div class="feature-content">
+                        <h3 id="t-feat1-h3">01. Rewolucja <span class="highlight-text">październikowa</span> <span class="highlight" style="font-size: 2.0rem;">mobilna</span>. </h3>
+                        <p id="t-feat1-p">Szacuje się, że obecnie <span class="highlight">64%</span> ruchu w sieci pochodzi z urządzeń mobilnych. Zamiast brutalnie wciskać desktopowy layout na mały ekran, projektuję interfejsy od nowa. Dbam o zachowanie odpowiednich proporcji, optymalizację ikon pod różne platformy oraz inne bardzo techniczne rzeczy, których nie ma sensu tu wymieniać, a sprawiają, że Twoja strona będzie wyświetlać się poprawnie na każdym urządzeniu.</p>
+                    </div>
+                    <div class="feature-poc">
+                        <div class="css-carousel">
+                            <div class="carousel-slide">
+                                <span class="poc-placeholder"><img src="Images/strona_glowna/detale.webp" alt="Detale" width="960" height="600" > </span>
+                            </div>
+                            <div class="carousel-slide">
+                               <span class="poc-placeholder"><img src="Images/strona_glowna/detale2.webp" alt="Detale2" width="960" height="600" > </span>
+                            </div>
+                            <div class="carousel-slide">
+                                 <span class="poc-placeholder"><img src="Images/strona_glowna/detale3.webp" alt="Detale3" width="960" height="600" > </span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="feature-block reverse">
+                    <div class="feature-content">
+                        <h3 id="t-feat2-h3">02. Przed <span class="highlight" style="font-size: 2.0rem;">SEO</span> nie uciekniemy... </h3>
+                        <p id="t-feat2-p">Czy komuś się to podoba, czy nie, google obsługuje ponad 90% wyszukiwań. Możemy albo się na to obrażać, albo... nauczyć grać ich kartami. Strona napisana w sposób ,,tradycyjny" (w edytorze kodu a nie np. wordpressie) pozwala na kompleksowe dostosowanie... <span class="highlight">wszystkiego</span>. Przekłada się to na lepsze wyniki w narzędziach analitycznych, wyższe pozycjonowanie oraz zmniejszone koszty reklam. </p>
+                    </div>
+                    <div class="feature-poc">
+                        <div class="poc-static">
+                             <span class="poc-placeholder"><img src="Images/strona_glowna/seo.webp" alt="Detale2" width="960" height="600" > </span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="feature-block">
+                    <div class="feature-content">
+                        <h3 id="t-feat3-h3">03. Pomagam firmom wejść w&nbsp;<span class="highlight" style="font-size: 2.0rem;">XXI</span> wiek od <span class="highlight" style="font-size: 2.0rem;">A&nbsp;do&nbsp;Z</span>.</h3>
+                        <p id="t-feat3-p">Nie ma znaczenia czy potrzebujesz wirtualnej wizytówki czy skomplikowanej witryny sklepu internetowego zintegrowanej z płatnościami on-line i systemem automatycznego przesyłania powiadomień. Skontaktuj się ze mną, by ustalić jakie dokładnie rozwiązanie będzie optymalne dla <span class="highlight">Twojej</span> firmy i jak je <span class="highlight">wdrożyć</span>.</p>
+                    </div>
+                    <div class="feature-poc">
+                        <div class="poc-static">
+                             <span class="poc-placeholder"><img src="Images/strona_glowna/rozwiazanie.webp" alt="Detale2" width="960" height="600" > </span>
+                        </div>
+                    </div>
+                </article>
+
+            </section>
+
+            <section class="story-section-2" id="content">
+                
+                <div class="story-header-2">
+                    <h2 id="t-story2-h2">Dlaczego <span class="highlight" style="font-size: 2.5rem;" >JA</span>?</h2>
+                    <p id="t-story2-p">> Bo JA <span class="highlight" style="font-size: 2.0rem;">≠</span> AI.</br>Czy go używam? Oczywiście, że <span class="highlight" style="font-size: 1.2rem;">tak</span>.</br>Pomaga mi w usprawnieniu pracy, optymalizacji kodu np. pod SEO, czy tłumaczeniu treści na języki których nie znam.</br>Ale unikalny design odpowiadający za pierwsze wrażenie użytkownika oraz merytoryka serwisu są zawsze wynikiem mojego wyczucia, pasji oraz ciężkiej pracy.</br>Stanowczo <span class="highlight" style="font-size: 1.2rem;">sprzeciwiam się</span> uśrednianiu wszystkiego, propagowaniu powtarzalności i bezmyślności - co często robi AI, jeżeli mu na to pozwolić.</p>
+                </div>
+                <div class="story-header-2-img">
+                    <img src="Images/strona_glowna/dew-lata.webp" width="960px" height="960px" alt="">
+                </div>
+
+            </section>
+
+    </main>
+
+    </div>
+
+<footer class="site-footer">
+    <div class="footer-decoration left-deco"></div>
+
+    <div class="footer-content-wrapper">
+        
+        <div class="footer-logo">
+            <a href="#">
+                <img src="Logo/android-chrome-192x192.png" alt="Jakub Jąderko - Logo">
+            </a>
+        </div>
+
+        <div class="footer-contact">
+            <a href="tel:+48500156450" class="contact-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                +48 500 156 450
+            </a>
+            
+            <a href="mailto:biuro@mlogistyk.pl" class="contact-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                biuro@mlogistyk.pl
+            </a>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="copyright" id="t-foot-copy">© 2026 Jakub Jąderko. Wszelkie prawa zastrzeżone.</p>
+            <div class="legal-links">
+                <a href="polityka-prywatnosci.html" id="t-foot-priv">Polityka prywatności</a>
+                <span class="separator">|</span>
+                <a href="#" id="t-foot-reg">Regulamin</a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer-decoration right-deco"></div>
+</footer>
+
+<script>
+    // --- OBSŁUGA WYSUWANEGO MENU  ---
+    const navToggle = document.getElementById('navToggle');
+    const navContainer = document.getElementById('navContainer');
+
+    navToggle.addEventListener('click', () => {
+        navContainer.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (event) => {
+        const isClickInsideMenu = navContainer.contains(event.target);
+        if (!isClickInsideMenu && navContainer.classList.contains('active')) {
+            navContainer.classList.remove('active');
+        }
+    });
+
+    // --- OBSŁUGA ZWIJANIA SIDEBARU (Efekt odjeżdżającej nakładki) ---
+    const sidebar = document.getElementById('mainSidebar');
+    const sidebarToggleBtn = document.getElementById('sidebarToggle');
+
+    sidebarToggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+    });
+
+    // --- SŁOWNIK TŁUMACZEŃ ---
+    const translations = {
+        pl: {
+            "t-form-h2": "Porozmawiajmy o <span class=\"highlight\">Twoim</span> projekcie",
+            "t-form-p": "Potrzebujesz wydajnego sklepu, aplikacji webowej lub cyfryzacji bazy danych? Zostaw wiadomość.",
+            "t-label-name": "Imię lub nazwa firmy",
+            "t-label-email": "Adres E-mail",
+            "t-label-msg": "Opisz krótko, czego potrzebujesz...",
+            "t-label-privacy": "Akceptuję <a href=\"polityka-prywatnosci.html\">politykę prywatności</a>.",
+            "t-btn-submit": "_wyślij_wiadomość",
+            "t-success-p": "Dziękuję za wiadomość!<br><br>Skontaktuję się z Tobą tak szybko, jak to będzie możliwe.",
+            "t-prof-h1": "Jakub Jąderko | <span>Full-stack web developer</span>",
+            "t-prof-p": "Programista - samouk, który uważa, że szkolna ława znacznie upośledza zdolności przyjmowania wiedzy. Pracę traktuje nieomal jak pasję, a jako remedium na ból pleców spowodowany wielogodzinnymi sesjami spędzonymi przed komputerem stosuje jogę.",
+            "t-nav-home": "_Strona_główna",
+            "t-hero-h1": "<span class=\"line-wrapper\"><span class=\"line\">Jak Twoja strona ma sprzedawać,</span></span><span class=\"line-wrapper\"><span class=\"line\">skoro jej design zatrzymał się</span></span><span class=\"line-wrapper\"><span class=\"line\">w <span class=\"highlight\">2015 roku?</span></span></span>",
+            "t-hero-desc": "> Strona internetowa nie powinna być nudna. </br> Tworzę <span class=\"highlight-p\">systemy</span> nowej generacji, które mają wyrazisty <span class=\"highlight-p\">smak</span>.",
+            "t-hero-btn": "_wejdź_w_XXI_wiek &gt;",
+            "t-story1-h2": "Wyjątkowe strony internetowe za <span class=\"highlight\" style=\"font-size: 2.5rem;\">rozsądną</span> cenę.",
+            "t-story1-p": "> Staram się by każda strona stworzona przeze mnie była <span class=\"highlight\">,,jakaś\"</span>.</br> Każdorazowo celuję w unikalny klimat, który warto <span class=\"highlight\">zapamiętać</span>.</br>Mój największy wróg? <span class=\"highlight\">Nijakość</span>.",
+            "t-feat1-h3": "01. Rewolucja <span class=\"highlight-text\">październikowa</span> <span class=\"highlight\" style=\"font-size: 2.0rem;\">mobilna</span>.",
+            "t-feat1-p": "Szacuje się, że obecnie <span class=\"highlight\">64%</span> ruchu w sieci pochodzi z urządzeń mobilnych. Zamiast brutalnie wciskać desktopowy layout na mały ekran, projektuję interfejsy od nowa. Dbam o zachowanie odpowiednich proporcji, optymalizację ikon pod różne platformy oraz inne bardzo techniczne rzeczy, których nie ma sensu tu wymieniać, a sprawiają, że Twoja strona będzie wyświetlać się poprawnie na każdym urządzeniu.",
+            "t-feat2-h3": "02. Przed <span class=\"highlight\" style=\"font-size: 2.0rem;\">SEO</span> nie uciekniemy...",
+            "t-feat2-p": "Czy komuś się to podoba, czy nie, google obsługuje ponad 90% wyszukiwań. Możemy albo się na to obrażać, albo... nauczyć grać ich kartami. Strona napisana w sposób ,,tradycyjny\" (w edytorze kodu a nie np. wordpressie) pozwala na kompleksowe dostosowanie... <span class=\"highlight\">wszystkiego</span>. Przekłada się to na lepsze wyniki w narzędziach analitycznych, wyższe pozycjonowanie oraz zmniejszone koszty reklam.",
+            "t-feat3-h3": "03. Pomagam firmom wejść w&nbsp;<span class=\"highlight\" style=\"font-size: 2.0rem;\">XXI</span> wiek od <span class=\"highlight\" style=\"font-size: 2.0rem;\">A&nbsp;do&nbsp;Z</span>.",
+            "t-feat3-p": "Nie ma znaczenia czy potrzebujesz wirtualnej wizytówki czy skomplikowanej witryny sklepu internetowego zintegrowanej z płatnościami on-line i systemem automatycznego przesyłania powiadomień. Skontaktuj się ze mną, by ustalić jakie dokładnie rozwiązanie będzie optymalne dla <span class=\"highlight\">Twojej</span> firmy i jak je <span class=\"highlight\">wdrożyć</span>.",
+            "t-story2-h2": "Dlaczego <span class=\"highlight\" style=\"font-size: 2.5rem;\">JA</span>?",
+            "t-story2-p": "> Bo JA <span class=\"highlight\" style=\"font-size: 2.0rem;\">≠</span> AI.</br>Czy go używam? Oczywiście, że <span class=\"highlight\" style=\"font-size: 1.2rem;\">tak</span>.</br>Pomaga mi w usprawnieniu pracy, optymalizacji kodu np. pod SEO, czy tłumaczeniu treści na języki których nie znam.</br>Ale unikalny design odpowiadający za pierwsze wrażenie użytkownika oraz merytoryka serwisu są zawsze wynikiem mojego wyczucia, pasji oraz ciężkiej pracy.</br>Stanowczo <span class=\"highlight\" style=\"font-size: 1.2rem;\">sprzeciwiam się</span> uśrednianiu wszystkiego, propagowaniu powtarzalności i bezmyślności - co często robi AI, jeżeli mu na to pozwolić.",
+            "t-foot-copy": "© 2026 Jakub Jąderko. Wszelkie prawa zastrzeżone.",
+            "t-foot-priv": "Polityka prywatności",
+            "t-foot-reg": "Regulamin"
+        },
+        en: {
+            "t-form-h2": "Let's talk about <span class=\"highlight\">your</span> project",
+            "t-form-p": "Need an efficient store, web application, or database digitization? Leave a message.",
+            "t-label-name": "Name or Company Name",
+            "t-label-email": "Email Address",
+            "t-label-msg": "Briefly describe what you need...",
+            "t-label-privacy": "I accept the <a href=\"polityka-prywatnosci.html\">privacy policy</a>.",
+            "t-btn-submit": "_send_message",
+            "t-success-p": "Thank you for your message!<br><br>I will contact you as soon as possible.",
+            "t-prof-h1": "Jakub Jąderko | <span>Full-stack web developer</span>",
+            "t-prof-p": "A self-taught programmer who believes that school desks severely impair the ability to absorb knowledge. He treats his work almost like a passion, and as a remedy for back pain caused by long sessions in front of the computer, he practices yoga.",
+            "t-nav-home": "_Home_page",
+            "t-hero-h1": "<span class=\"line-wrapper\"><span class=\"line\">How is your website supposed to sell,</span></span><span class=\"line-wrapper\"><span class=\"line\">when its design is stuck</span></span><span class=\"line-wrapper\"><span class=\"line\">in <span class=\"highlight\">2015?</span></span></span>",
+            "t-hero-desc": "> A website shouldn't be boring. </br> I create next-generation <span class=\"highlight-p\">systems</span> with a distinct <span class=\"highlight-p\">flavor</span>.",
+            "t-hero-btn": "_enter_the_21st_century &gt;",
+            "t-story1-h2": "Exceptional websites at a <span class=\"highlight\" style=\"font-size: 2.5rem;\">reasonable</span> price.",
+            "t-story1-p": "> I strive to make every website I create <span class=\"highlight\">'something special'</span>.</br> I always aim for a unique vibe worth <span class=\"highlight\">remembering</span>.</br>My biggest enemy? <span class=\"highlight\">Mediocrity</span>.",
+            "t-feat1-h3": "01. The <span class=\"highlight-text\">October</span> <span class=\"highlight\" style=\"font-size: 2.0rem;\">mobile</span> revolution.",
+            "t-feat1-p": "It is estimated that currently <span class=\"highlight\">64%</span> of web traffic comes from mobile devices. Instead of brutally forcing a desktop layout onto a small screen, I design interfaces from scratch. I care about maintaining appropriate proportions, optimizing icons for different platforms, and other highly technical things that make no sense listing here, but make your website display correctly on every device.",
+            "t-feat2-h3": "02. We can't escape <span class=\"highlight\" style=\"font-size: 2.0rem;\">SEO</span>...",
+            "t-feat2-p": "Whether you like it or not, Google handles over 90% of searches. We can either get mad at it or... learn to play their cards. A website written in a 'traditional' way (in a code editor, not e.g., WordPress) allows for comprehensive customization of... <span class=\"highlight\">everything</span>. This translates to better results in analytical tools, higher positioning, and reduced advertising costs.",
+            "t-feat3-h3": "03. I help companies enter the <span class=\"highlight\" style=\"font-size: 2.0rem;\">21st</span> century from <span class=\"highlight\" style=\"font-size: 2.0rem;\">A&nbsp;to&nbsp;Z</span>.",
+            "t-feat3-p": "It doesn't matter if you need a virtual business card or a complex e-commerce site integrated with online payments and an automated notification system. Contact me to determine exactly what solution will be optimal for <span class=\"highlight\">your</span> company and how to <span class=\"highlight\">implement</span> it.",
+            "t-story2-h2": "Why <span class=\"highlight\" style=\"font-size: 2.5rem;\">ME</span>?",
+            "t-story2-p": "> Because I <span class=\"highlight\" style=\"font-size: 2.0rem;\">≠</span> AI.</br>Do I use it? Of course <span class=\"highlight\" style=\"font-size: 1.2rem;\">I do</span>.</br>It helps me streamline work, optimize code e.g., for SEO, or translate content into languages I don't know.</br>But the unique design responsible for the user's first impression and the substantive content of the site are always the result of my intuition, passion, and hard work.</br>I strongly <span class=\"highlight\" style=\"font-size: 1.2rem;\">oppose</span> averaging everything, promoting repeatability and thoughtlessness - which AI often does if allowed to.",
+            "t-foot-copy": "© 2026 Jakub Jąderko. All rights reserved.",
+            "t-foot-priv": "Privacy Policy",
+            "t-foot-reg": "Terms of Service"
+        },
+        de: {
+            "t-form-h2": "Lass uns über <span class=\"highlight\">dein</span> Projekt sprechen",
+            "t-form-p": "Brauchst du einen effizienten Shop, eine Web-App oder Datenbank-Digitalisierung? Hinterlasse eine Nachricht.",
+            "t-label-name": "Name oder Firmenname",
+            "t-label-email": "E-Mail-Adresse",
+            "t-label-msg": "Beschreibe kurz, was du brauchst...",
+            "t-label-privacy": "Ich akzeptiere die <a href=\"polityka-prywatnosci.html\">Datenschutzerklärung</a>.",
+            "t-btn-submit": "_nachricht_senden",
+            "t-success-p": "Danke für deine Nachricht!<br><br>Ich werde mich so schnell wie möglich bei dir melden.",
+            "t-prof-h1": "Jakub Jąderko | <span>Full-stack web developer</span>",
+            "t-prof-p": "Ein autodidaktischer Programmierer, der glaubt, dass die Schulbank die Fähigkeit, Wissen aufzunehmen, stark beeinträchtigt. Er betrachtet seine Arbeit fast als Leidenschaft und praktiziert Yoga als Heilmittel gegen Rückenschmerzen, die durch stundenlanges Sitzen vor dem Computer verursacht werden.",
+            "t-nav-home": "_Startseite",
+            "t-hero-h1": "<span class=\"line-wrapper\"><span class=\"line\">Wie soll deine Website verkaufen,</span></span><span class=\"line-wrapper\"><span class=\"line\">wenn ihr Design steckengeblieben ist</span></span><span class=\"line-wrapper\"><span class=\"line\">im Jahr <span class=\"highlight\">2015?</span></span></span>",
+            "t-hero-desc": "> Eine Website sollte nicht langweilig sein. </br> Ich erstelle <span class=\"highlight-p\">Systeme</span> der nächsten Generation mit einem unverwechselbaren <span class=\"highlight-p\">Geschmack</span>.",
+            "t-hero-btn": "_trete_ins_21_jahrhundert_ein &gt;",
+            "t-story1-h2": "Außergewöhnliche Websites zu einem <span class=\"highlight\" style=\"font-size: 2.5rem;\">vernünftigen</span> Preis.",
+            "t-story1-p": "> Ich bemühe mich, jede von mir erstellte Website zu <span class=\"highlight\">'etwas Besonderem'</span> zu machen.</br> Ich strebe immer nach einer einzigartigen Atmosphäre, an die man sich <span class=\"highlight\">erinnert</span>.</br>Mein größter Feind? <span class=\"highlight\">Mittelmäßigkeit</span>.",
+            "t-feat1-h3": "01. Die <span class=\"highlight-text\">Oktober</span> <span class=\"highlight\" style=\"font-size: 2.0rem;\">mobile</span> Revolution.",
+            "t-feat1-p": "Es wird geschätzt, dass derzeit <span class=\"highlight\">64%</span> des Web-Traffics von mobilen Geräten stammt. Anstatt ein Desktop-Layout brutal auf einen kleinen Bildschirm zu zwingen, entwerfe ich Schnittstellen von Grund auf neu. Ich achte auf angemessene Proportionen, optimiere Symbole für verschiedene Plattformen und andere hochtechnische Dinge, die hier keinen Sinn machen, aber dafür sorgen, dass deine Website auf jedem Gerät korrekt angezeigt wird.",
+            "t-feat2-h3": "02. Wir können <span class=\"highlight\" style=\"font-size: 2.0rem;\">SEO</span> nicht entkommen...",
+            "t-feat2-p": "Ob es jemandem gefällt oder nicht, Google wickelt über 90% der Suchanfragen ab. Wir können uns entweder darüber ärgern oder... lernen, mit ihren Karten zu spielen. Eine 'traditionell' geschriebene Website (in einem Code-Editor und nicht z. B. in WordPress) ermöglicht eine umfassende Anpassung von... <span class=\"highlight\">allem</span>. Dies führt zu besseren Ergebnissen in Analysetools, einer höheren Positionierung und reduzierten Werbekosten.",
+            "t-feat3-h3": "03. Ich helfe Unternehmen, von <span class=\"highlight\" style=\"font-size: 2.0rem;\">A&nbsp;bis&nbsp;Z</span> ins <span class=\"highlight\" style=\"font-size: 2.0rem;\">21.</span> Jahrhundert einzutreten.",
+            "t-feat3-p": "Es spielt keine Rolle, ob du eine virtuelle Visitenkarte oder eine komplexe E-Commerce-Website benötigst, die in Online-Zahlungen und ein automatisiertes Benachrichtigungssystem integriert ist. Kontaktiere mich, um genau zu bestimmen, welche Lösung für <span class=\"highlight\">dein</span> Unternehmen optimal ist und wie sie <span class=\"highlight\">implementiert</span> werden kann.",
+            "t-story2-h2": "Warum <span class=\"highlight\" style=\"font-size: 2.5rem;\">ICH</span>?",
+            "t-story2-p": "> Denn ICH <span class=\"highlight\" style=\"font-size: 2.0rem;\">≠</span> KI.</br>Benutze ich sie? Natürlich <span class=\"highlight\" style=\"font-size: 1.2rem;\">tue ich das</span>.</br>Sie hilft mir, die Arbeit zu rationalisieren, Code z. B. für SEO zu optimieren oder Inhalte in Sprachen zu übersetzen, die ich nicht kenne.</br>Aber das einzigartige Design, das für den ersten Eindruck des Benutzers verantwortlich ist, und der wesentliche Inhalt der Website sind immer das Ergebnis meiner Intuition, Leidenschaft und harten Arbeit.</br>Ich bin entschieden <span class=\"highlight\" style=\"font-size: 1.2rem;\">dagegen</span>, alles zu mitteln, Wiederholbarkeit und Gedankenlosigkeit zu fördern - was KI oft tut, wenn man sie lässt.",
+            "t-foot-copy": "© 2026 Jakub Jąderko. Alle Rechte vorbehalten.",
+            "t-foot-priv": "Datenschutzerklärung",
+            "t-foot-reg": "Nutzungsbedingungen"
+        }
+    };
+
+    // --- FUNKCJA ZMIANY JĘZYKA ---
+    function setLang(lang) {
+        // Podmień teksty
+        const dict = translations[lang];
+        for (const [id, text] of Object.entries(dict)) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.innerHTML = text;
+            }
+        }
+        
+        // Zaktualizuj klasę aktywną dla przycisków
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.dataset.lang === lang) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+</script>
+<script src="script.js" defer></script>
+
+</body>
+</html>
