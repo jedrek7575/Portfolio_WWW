@@ -578,26 +578,28 @@
             100% { box-shadow: -2px 0 5px rgba(157, 2, 8, 0); }
         }
 
-        .side-menu {
-            display: flex;
-            flex-direction: column;
-            padding: 2rem 1.5rem;
-            gap: 3.5rem;
-            height: 100%;
-            align-items: start;
-            justify-content: start;
-            width: 100%;
-        }
+.side-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    gap: 3.5rem;
+    height: 100%;       /* Upewnij się, że zajmuje całą wysokość rodzica */
+    align-items: start; /* Zostawiamy 'start' jeśli chcesz, żeby linki były wyrównane do lewej strony menu */
+    
+    width: 100%;
+}
 
         .side-menu a {
             display: flex;
             align-items: center;
+           
             gap: 1rem;
             color: var(--text-muted);
             text-decoration: none;
             font-family: 'JetBrains Mono', monospace;
             font-size: 1rem;
             transition: color 0.3s, transform 0.3s;
+            
         }
 
         .side-menu a:hover,
@@ -624,9 +626,9 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-top: auto;
-            justify-self: end !important;
-            
+            margin-top: 10%;
+            margin-bottom: 80%;
+
         }
 
         .lang-switcher-container .icon {
@@ -1365,16 +1367,8 @@
             </button>
             
             <nav class="side-menu">
-                <a href="#" class="active">
-                    <span class="icon"> <img src="Logo/android-chrome-192x192.png" alt="Logo Jakub Jąderko"> </span>
-                    <span class="text" id="t-nav-home">_Strona_główna</span>
-                </a>
-                <a href="https://mlogistyk.pl/">
-                    <span class="icon"> <img src="Logo/Icons/mlogistyk-192x192.png" alt="mLogistyk ikona"> </span>
-                    <span class="text">_mLogistyk</span>
-                </a>
 
-                <div class="lang-switcher-container">
+                 <div class="lang-switcher-container">
                     <span class="icon" aria-label="Zmień język"> 
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"></circle>
@@ -1388,6 +1382,18 @@
                         <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
                     </div>
                 </div>
+
+
+                <a href="#" class="active">
+                    <span class="icon"> <img src="Logo/android-chrome-192x192.png" alt="Logo Jakub Jąderko"> </span>
+                    <span class="text" id="t-nav-home">_Strona_główna</span>
+                </a>
+                <a href="https://mlogistyk.pl/">
+                    <span class="icon"> <img src="Logo/Icons/mlogistyk-192x192.png" alt="mLogistyk ikona"> </span>
+                    <span class="text">_mLogistyk</span>
+                </a>
+
+               
             </nav>
         </div>
 
