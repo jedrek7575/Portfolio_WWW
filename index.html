@@ -6,6 +6,7 @@
     <title>Jakub Jąderko | Web Development & Data Solutions</title>
     <meta name="description" content="Staram się by każda strona stworzona przeze mnie była wyjątkowa. Każdorazowo celuję w unikalny klimat, który warto zapamiętać. Mój największy wróg? Nijakość.">
     <meta name="theme-color" content="#0a0a0c">
+    <link rel="preload" as="image" href="Images/Hero/mainpage-poster.webp" fetchpriority="high">
 
     <link rel="icon" href="/Logo/favicon.ico" sizes="any">
     <link rel="icon" href="/Logo/favicon-32x32.png" type="image/png" sizes="32x32">
@@ -31,10 +32,20 @@
     <meta property="twitter:description" content="Staram się by każda strona stworzona przeze mnie była wyjątkowa. Każdorazowo celuję w unikalny klimat, który warto zapamiętać. Mój największy wróg? Nijakość.">
     <meta property="twitter:image" content="https://jakubjaderko.pl/Logo/it-kulaziemska.webp">
 
+
+    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500;900&display=swap" rel="stylesheet">
-    
+    </noscript>
+
+
+
+
+
     <style>
         :root {
             --bg-dark: #0a0a0c;
@@ -73,6 +84,7 @@
             width: 100%;
             flex: 1;
             position: relative;
+            flex-direction: row-reverse;
         }
 
         /* --- LEWA STRONA (Sidebar) --- */
@@ -630,7 +642,8 @@
         }
 
         .icon img {
-            width: 32px; 
+            width: 32px;
+            height: 32px; 
         }
 
         .lang-switcher-container {
@@ -696,9 +709,9 @@
             will-change: transform, opacity;
         }
 
-        .hero-title .line-wrapper:nth-child(1) .line { animation-delay: 0.1s; }
-        .hero-title .line-wrapper:nth-child(2) .line { animation-delay: 0.2s; }
-        .hero-title .line-wrapper:nth-child(3) .line { animation-delay: 0.3s; }
+        .hero-title .line-wrapper:nth-child(1) .line { animation-delay: 0.0s; }
+        .hero-title .line-wrapper:nth-child(2) .line { animation-delay: 0.0s; }
+        .hero-title .line-wrapper:nth-child(3) .line { animation-delay: 0.0s; }
 
         .hero-content .highlight {
             display: inline-block;
@@ -1304,11 +1317,172 @@
             }
             .contact-link { font-size: 1.2rem; }
         }
+        .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
     </style>
 </head>
 <body>
 
     <div class="app-layout">
+
+
+    <main class="main-content">
+        
+        <div class="floating-nav-container" id="navContainer">
+            <button class="nav-arrow" id="navToggle" aria-label="Rozwiń menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6" />
+                </svg>
+            </button>
+            
+            <nav class="side-menu">
+
+                 <div class="lang-switcher-container">
+                    <span class="sr-only">Wybór języka / Language switcher:</span>
+                    <span class="icon"> 
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        </svg>
+                    </span>
+                    <div class="lang-buttons">
+                        <button class="lang-btn active" data-lang="pl" onclick="setLang('pl')">PL</button>
+                        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+                        <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
+                    </div>
+                </div>
+
+                <div class="nav-links">
+                <div style="height: 2px; width: 100%; background-color: var(--accent-bordeaux);"></div>
+
+                <a href="#" class="active">
+                    <span class="icon"> <img src="Logo/android-chrome-192x192.png" loading="lazy" decoding="async" fetchpriority="low" alt="Logo Jakub Jąderko - Twórca unikalnych stron internetowych i aplikacji webowych" width="192" height="192"> </span>
+                    <span class="text" id="t-nav-home">_Strona_główna</span>
+                </a>
+                <a href="https://mlogistyk.pl/">
+                    <span class="icon"> <img src="Logo/Icons/mlogistyk-192x192.png" alt="mLogistyk - nowoczesna i łatwa w obsłudze aplikacja do zarządzania dostawami" loading="lazy" decoding="async" fetchpriority="low" width="192" height="192"> </span>
+                    <span class="text">_mLogistyk</span>
+                </a>
+                <div style="height: 2px; width: 100%; background-color: var(--accent-bordeaux);"></div>
+               </div>
+            </nav>
+        </div>
+
+        <section class="hero-video-section">
+<video class="hero-video" autoplay muted playsinline loop preload="none" poster="Images/Hero/mainpage-poster.webp">
+    <source src="Images/Hero/mainpage.mp4" type="video/mp4">
+    Twoja przeglądarka nie obsługuje wideo.
+</video>
+            
+            <div class="hero-overlay"></div>
+
+            <div class="hero-content">
+                <h1 class="hero-title" id="t-hero-h1">
+                    <span class="line-wrapper"><span class="line">Jak Twoja strona ma sprzedawać,</span></span>
+                    <span class="line-wrapper"><span class="line">skoro jej design zatrzymał się</span></span>
+                    <span class="line-wrapper"><span class="line">w <span class="highlight">2015 roku?</span></span></span>
+                </h1>
+                
+                <div class="hero-desc-wrapper">
+                    <p id="t-hero-desc">> Strona internetowa nie powinna być nudna. <br> Tworzę <span class="highlight-p">systemy</span> nowej generacji, które mają wyrazisty <span class="highlight-p">smak</span>.</p>
+                </div>
+                
+                <div class="hero-actions">
+                    <a href="#content" class="primary-btn" id="t-hero-btn">_wejdź_w_XXI_wiek &gt;</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="story-section" id="content">
+                
+                <div class="story-header">
+                    <h2 id="t-story1-h2">Wyjątkowe strony internetowe za <span class="highlight" style="font-size: inherit;">rozsądną</span> cenę.</h2>
+                    <p id="t-story1-p">> Staram się by każda strona stworzona przeze mnie była <span class="highlight">,,jakaś"</span>.<br> Każdorazowo celuję w unikalny klimat, który warto <span class="highlight">zapamiętać</span>.<br>Mój największy wróg? <span class="highlight">Nijakość</span>.</p>
+                </div>
+
+                <article class="feature-block">
+                    <div class="feature-content">
+                        <h3 id="t-feat1-h3">01. Rewolucja <span class="highlight-text">październikowa</span> <span class="highlight" style="font-size: inherit;">mobilna</span>.</h3>
+                        <p id="t-feat1-p">Szacuje się, że obecnie <span class="highlight">64%</span> ruchu w sieci pochodzi z urządzeń mobilnych. Zamiast brutalnie wciskać desktopowy layout na mały ekran, projektuję interfejsy od nowa. Dbam o zachowanie odpowiednich proporcji, optymalizację ikon pod różne platformy oraz inne bardzo techniczne rzeczy, których nie ma sensu tu wymieniać, a sprawiają, że Twoja strona będzie wyświetlać się poprawnie na każdym urządzeniu.</p>
+                    </div>
+                    <div class="feature-poc">
+                        <div class="css-carousel">
+                            <div class="carousel-slide">
+                                <span class="poc-placeholder"><img src="Images/strona_glowna/detale.webp" alt="64% ruchu w internecie to smartfony - twórcy stron internetowych często o tym zapominają i nie optymalizują front-endu pod tym kątem" width="960" height="600" loading="lazy" decoding="async"></span>
+                            </div>
+                            <div class="carousel-slide">
+                               <span class="poc-placeholder"><img src="Images/strona_glowna/detale2.webp" alt="W internecie na odbiór treści wpływ mają najmniejsze detale - takie jak prawidłowo ustawione favicony" width="960" height="600" loading="lazy" decoding="async"></span>
+                            </div>
+                            <div class="carousel-slide">
+                                 <span class="poc-placeholder"><img src="Images/strona_glowna/detale3.webp" alt="Desktopowy layout nie zawsze sprawdza się na urządzeniach mobilnych. Ja projektuje całe systemy od podstaw by skalowały się idealnie na każdym urządzeniu." width="960" height="600" loading="lazy" decoding="async"></span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="feature-block reverse">
+                    <div class="feature-content">
+                        <h3 id="t-feat2-h3">02. Przed <span class="highlight" style="font-size: inherit;">SEO</span> nie uciekniemy...</h3>
+                        <p id="t-feat2-p">Czy komuś się to podoba, czy nie, google obsługuje ponad 90% wyszukiwań. Możemy albo się na to obrażać, albo... nauczyć grać ich kartami. Strona napisana w sposób ,,tradycyjny" (w edytorze kodu a nie np. wordpressie) pozwala na kompleksowe dostosowanie... <span class="highlight">wszystkiego</span>. Przekłada się to na lepsze wyniki w narzędziach analitycznych, wyższe pozycjonowanie oraz zmniejszone koszty reklam.</p>
+                    </div>
+                    <div class="feature-poc">
+                        <div class="poc-static">
+                             <span class="poc-placeholder"><img src="Images/strona_glowna/seo.webp" alt="Wizualizacja struktury optymalizacji SEO" width="960" height="600" loading="lazy" decoding="async"></span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="feature-block">
+                    <div class="feature-content">
+                        <h3 id="t-feat3-h3">03. Pomagam firmom wejść w&nbsp;<span class="highlight" style="font-size: inherit;">XXI</span> wiek od <span class="highlight" style="font-size: inherit;">A&nbsp;do&nbsp;Z</span>.</h3>
+                        <p id="t-feat3-p">Nie ma znaczenia czy potrzebujesz wirtualnej wizytówki czy skomplikowanej witryny sklepu internetowego zintegrowanej z płatnościami on-line i systemem automatycznego przesyłania powiadomień. Skontaktuj się ze mną, by ustalić jakie dokładnie rozwiązanie będzie optymalne dla <span class="highlight">Twojej</span> firmy i jak je <span class="highlight">wdrożyć</span>.</p>
+                    </div>
+                    <div class="feature-poc">
+                        <div class="poc-static">
+                             <span class="poc-placeholder"><img src="Images/strona_glowna/rozwiazanie.webp" alt="Kompleksowe wdrożenie projektu i schemat działania" width="960" height="600" loading="lazy" decoding="async"></span>
+                        </div>
+                    </div>
+                </article>
+
+            </section>
+
+            <section class="story-section-2">
+                <div class="story-header-2-img">
+                    <img src="Images/strona_glowna/dew-lata.webp" width="960" height="960" alt="Jakub Jąderko - Full-stack Web Developer" loading="lazy" decoding="async">
+                </div>
+                <div class="story-header-2">
+                    <h2 id="t-story2-h2">Dlaczego <span class="highlight" style="font-size: inherit;">JA</span>?</h2>
+                    <p id="t-story2-p">> Bo JA <span class="highlight" style="font-size: 1.5rem;">≠</span> AI.<br>Czy go używam? Oczywiście, że <span class="highlight" style="font-size: 1.2rem;">tak</span>.<br>Pomaga mi w usprawnieniu pracy, optymalizacji kodu np. pod SEO, czy tłumaczeniu treści na języki których nie znam.<br>Ale unikalny design odpowiadający za pierwsze wrażenie użytkownika oraz merytoryka serwisu są zawsze wynikiem mojego wyczucia, pasji oraz ciężkiej pracy.<br>Stanowczo <span class="highlight" style="font-size: 1.2rem;">sprzeciwiam się</span> uśrednianiu wszystkiego, propagowaniu powtarzalności i bezmyślności - co często robi AI, jeżeli mu na to pozwolić.</p>
+                </div>
+
+            </section>
+
+    </main>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <aside class="sidebar" id="mainSidebar">
         
@@ -1362,144 +1536,13 @@
             </div>
 
              <div class="profile-image-container">
-                <img src="Images/strona_glowna/deweloper2.webp" alt="Jakub Jąderko - Twórca Stron Web" class="profile-image">
+                <img src="Images/strona_glowna/deweloper2.webp" alt="Jakub Jąderko - Twórca Stron Web" class="profile-image" loading="lazy" decoding="async" fetchpriority="low">
             </div>
         </div>
 
     </aside>
 
-    <main class="main-content">
-        
-        <div class="floating-nav-container" id="navContainer">
-            <button class="nav-arrow" id="navToggle" aria-label="Rozwiń menu">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M15 18l-6-6 6-6" />
-                </svg>
-            </button>
-            
-            <nav class="side-menu">
 
-                 <div class="lang-switcher-container">
-                    <span class="icon" aria-label="Zmień język"> 
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                        </svg>
-                    </span>
-                    <div class="lang-buttons">
-                        <button class="lang-btn active" data-lang="pl" onclick="setLang('pl')">PL</button>
-                        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
-                        <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
-                    </div>
-                </div>
-
-                <div class="nav-links">
-                <div style="height: 2px; width: 100%; background-color: var(--accent-bordeaux);"></div>
-
-                <a href="#" class="active">
-                    <span class="icon"> <img src="Logo/android-chrome-192x192.png" alt="Logo Jakub Jąderko"> </span>
-                    <span class="text" id="t-nav-home">_Strona_główna</span>
-                </a>
-                <a href="https://mlogistyk.pl/">
-                    <span class="icon"> <img src="Logo/Icons/mlogistyk-192x192.png" alt="mLogistyk ikona"> </span>
-                    <span class="text">_mLogistyk</span>
-                </a>
-                <div style="height: 2px; width: 100%; background-color: var(--accent-bordeaux);"></div>
-               </div>
-            </nav>
-        </div>
-
-        <section class="hero-video-section">
-            <video class="hero-video" autoplay muted playsinline loop preload="auto" poster="Images/Hero/mainpage-poster.jpg">
-                <source src="Images/Hero/mainpage.mp4" type="video/mp4">
-                Twoja przeglądarka nie obsługuje wideo.
-            </video>
-            
-            <div class="hero-overlay"></div>
-
-            <div class="hero-content">
-                <h1 class="hero-title" id="t-hero-h1">
-                    <span class="line-wrapper"><span class="line">Jak Twoja strona ma sprzedawać,</span></span>
-                    <span class="line-wrapper"><span class="line">skoro jej design zatrzymał się</span></span>
-                    <span class="line-wrapper"><span class="line">w <span class="highlight">2015 roku?</span></span></span>
-                </h1>
-                
-                <div class="hero-desc-wrapper">
-                    <p id="t-hero-desc">> Strona internetowa nie powinna być nudna. <br> Tworzę <span class="highlight-p">systemy</span> nowej generacji, które mają wyrazisty <span class="highlight-p">smak</span>.</p>
-                </div>
-                
-                <div class="hero-actions">
-                    <a href="#content" class="primary-btn" id="t-hero-btn">_wejdź_w_XXI_wiek &gt;</a>
-                </div>
-            </div>
-        </section>
-
-        <section class="story-section" id="content">
-                
-                <div class="story-header">
-                    <h2 id="t-story1-h2">Wyjątkowe strony internetowe za <span class="highlight" style="font-size: inherit;">rozsądną</span> cenę.</h2>
-                    <p id="t-story1-p">> Staram się by każda strona stworzona przeze mnie była <span class="highlight">,,jakaś"</span>.<br> Każdorazowo celuję w unikalny klimat, który warto <span class="highlight">zapamiętać</span>.<br>Mój największy wróg? <span class="highlight">Nijakość</span>.</p>
-                </div>
-
-                <article class="feature-block">
-                    <div class="feature-content">
-                        <h3 id="t-feat1-h3">01. Rewolucja <span class="highlight-text">październikowa</span> <span class="highlight" style="font-size: inherit;">mobilna</span>.</h3>
-                        <p id="t-feat1-p">Szacuje się, że obecnie <span class="highlight">64%</span> ruchu w sieci pochodzi z urządzeń mobilnych. Zamiast brutalnie wciskać desktopowy layout na mały ekran, projektuję interfejsy od nowa. Dbam o zachowanie odpowiednich proporcji, optymalizację ikon pod różne platformy oraz inne bardzo techniczne rzeczy, których nie ma sensu tu wymieniać, a sprawiają, że Twoja strona będzie wyświetlać się poprawnie na każdym urządzeniu.</p>
-                    </div>
-                    <div class="feature-poc">
-                        <div class="css-carousel">
-                            <div class="carousel-slide">
-                                <span class="poc-placeholder"><img src="Images/strona_glowna/detale.webp" alt="Responsywne detale widoku mobilnego 1" width="960" height="600" loading="lazy" decoding="async"></span>
-                            </div>
-                            <div class="carousel-slide">
-                               <span class="poc-placeholder"><img src="Images/strona_glowna/detale2.webp" alt="Responsywne detale widoku mobilnego 2" width="960" height="600" loading="lazy" decoding="async"></span>
-                            </div>
-                            <div class="carousel-slide">
-                                 <span class="poc-placeholder"><img src="Images/strona_glowna/detale3.webp" alt="Responsywne detale widoku mobilnego 3" width="960" height="600" loading="lazy" decoding="async"></span>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="feature-block reverse">
-                    <div class="feature-content">
-                        <h3 id="t-feat2-h3">02. Przed <span class="highlight" style="font-size: inherit;">SEO</span> nie uciekniemy...</h3>
-                        <p id="t-feat2-p">Czy komuś się to podoba, czy nie, google obsługuje ponad 90% wyszukiwań. Możemy albo się na to obrażać, albo... nauczyć grać ich kartami. Strona napisana w sposób ,,tradycyjny" (w edytorze kodu a nie np. wordpressie) pozwala na kompleksowe dostosowanie... <span class="highlight">wszystkiego</span>. Przekłada się to na lepsze wyniki w narzędziach analitycznych, wyższe pozycjonowanie oraz zmniejszone koszty reklam.</p>
-                    </div>
-                    <div class="feature-poc">
-                        <div class="poc-static">
-                             <span class="poc-placeholder"><img src="Images/strona_glowna/seo.webp" alt="Wizualizacja struktury optymalizacji SEO" width="960" height="600" loading="lazy" decoding="async"></span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="feature-block">
-                    <div class="feature-content">
-                        <h3 id="t-feat3-h3">03. Pomagam firmom wejść w&nbsp;<span class="highlight" style="font-size: inherit;">XXI</span> wiek od <span class="highlight" style="font-size: inherit;">A&nbsp;do&nbsp;Z</span>.</h3>
-                        <p id="t-feat3-p">Nie ma znaczenia czy potrzebujesz wirtualnej wizytówki czy skomplikowanej witryny sklepu internetowego zintegrowanej z płatnościami on-line i systemem automatycznego przesyłania powiadomień. Skontaktuj się ze mną, by ustalić jakie dokładnie rozwiązanie będzie optymalne dla <span class="highlight">Twojej</span> firmy i jak je <span class="highlight">wdrożyć</span>.</p>
-                    </div>
-                    <div class="feature-poc">
-                        <div class="poc-static">
-                             <span class="poc-placeholder"><img src="Images/strona_glowna/rozwiazanie.webp" alt="Kompleksowe wdrożenie projektu i schemat działania" width="960" height="600" loading="lazy" decoding="async"></span>
-                        </div>
-                    </div>
-                </article>
-
-            </section>
-
-            <section class="story-section-2">
-                <div class="story-header-2-img">
-                    <img src="Images/strona_glowna/dew-lata.webp" width="960" height="960" alt="Grafika Web Developera Jakub Jąderko" loading="lazy" decoding="async">
-                </div>
-                <div class="story-header-2">
-                    <h2 id="t-story2-h2">Dlaczego <span class="highlight" style="font-size: inherit;">JA</span>?</h2>
-                    <p id="t-story2-p">> Bo JA <span class="highlight" style="font-size: 1.5rem;">≠</span> AI.<br>Czy go używam? Oczywiście, że <span class="highlight" style="font-size: 1.2rem;">tak</span>.<br>Pomaga mi w usprawnieniu pracy, optymalizacji kodu np. pod SEO, czy tłumaczeniu treści na języki których nie znam.<br>Ale unikalny design odpowiadający za pierwsze wrażenie użytkownika oraz merytoryka serwisu są zawsze wynikiem mojego wyczucia, pasji oraz ciężkiej pracy.<br>Stanowczo <span class="highlight" style="font-size: 1.2rem;">sprzeciwiam się</span> uśrednianiu wszystkiego, propagowaniu powtarzalności i bezmyślności - co często robi AI, jeżeli mu na to pozwolić.</p>
-                </div>
-
-            </section>
-
-    </main>
 
     </div>
 
@@ -1510,7 +1553,7 @@
         
         <div class="footer-logo">
             <a href="#">
-                <img src="Logo/android-chrome-192x192.png" alt="Jakub Jąderko - Logo Stopka" loading="lazy">
+                <img src="Logo/android-chrome-192x192.png" alt="Jakub Jąderko - Logo Stopka" loading="lazy" decoding="async" fetchpriority="low" width="192" height="192">
             </a>
         </div>
 
@@ -1536,7 +1579,7 @@
             <div class="legal-links">
                 <a href="polityka-prywatnosci.html" id="t-foot-priv">Polityka prywatności</a>
                 <span class="separator">|</span>
-                <a href="#" id="t-foot-reg">Regulamin</a>
+                <a href="regulamin.html" id="t-foot-reg">Regulamin</a>
             </div>
         </div>
 

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Polityka Prywatności | Jakub Jąderko</title>
+    <meta name="description" content="Polityka prywatności strony jakubjaderko.pl. Zero prawniczego bełkotu, same konkrety o ochronie Twoich danych.">
+    <meta name="theme-color" content="#0a0a0c">
+
+    <link rel="icon" href="/Logo/favicon.ico" sizes="any">
+    <link rel="icon" href="/Logo/favicon-32x32.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="/Logo/favicon-16x16.png" type="image/png" sizes="16x16">
+    <link rel="apple-touch-icon" href="/Logo/apple-touch-icon.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0a0a0c;
+            --bg-panel: #1d1d28f1;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent-bordeaux: #b50006;
+            --accent-hover: #d00000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+            overflow-x: hidden;
+            width: 100%;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-layout { display: flex; width: 100%; flex: 1; position: relative; }
+
+        /* --- LEWA STRONA (Sidebar) --- */
+        .sidebar {
+            flex: 0 0 37%;
+            height: 100vh;
+            background-color: var(--bg-panel);
+            position: sticky;
+            top: 0;
+            left: 0;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 2px 0 20px rgba(181, 0, 6, 0.15);
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        .sidebar::before {
+            content: ""; position: absolute; inset: 0; pointer-events: none;
+            background: linear-gradient(to top, var(--accent-bordeaux) 0%, transparent 100%) bottom left / 4px 75% no-repeat,
+                        linear-gradient(to bottom, var(--accent-bordeaux) 0%, transparent 100%) top right / 4px 75% no-repeat;
+            z-index: 20;
+        }
+
+        .sidebar::after {
+            content: ""; position: absolute; inset: 0; pointer-events: none;
+            background: linear-gradient(to right, var(--accent-bordeaux) 0%, transparent 100%) bottom left / 75% 4px no-repeat,
+                        linear-gradient(to left, var(--accent-bordeaux) 0%, transparent 100%) top right / 75% 4px no-repeat;
+            z-index: 20;
+        }
+
+        .sidebar-toggle {
+            position: absolute; top: 2rem; right: 2rem; background: transparent; border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px; color: var(--text-muted); width: 40px; height: 40px; display: flex;
+            align-items: center; justify-content: center; cursor: pointer; z-index: 30; transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle:hover { color: var(--accent-bordeaux); border-color: var(--accent-bordeaux); background-color: rgba(181, 0, 6, 0.05); }
+        .sidebar-toggle svg { width: 20px; height: 20px; transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1); }
+        .sidebar.collapsed .sidebar-toggle svg { transform: rotate(180deg); }
+
+        .sidebar-view {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 2.5rem;
+            display: flex; flex-direction: column; justify-content: center;
+            transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.6s ease;
+        }
+
+        .sidebar-view p { font-weight: 900; font-size: 1.1rem !important; }
+
+        .profile-view {
+            z-index: 1; background-color: var(--bg-panel); display: flex; flex-direction: column;
+            opacity: 0; align-items: center; text-align: center; justify-content: space-between; transform: scale(0.95);
+        }
+
+        .sidebar.collapsed .profile-view { transform: scale(1); opacity: 1; }
+
+        .form-view { z-index: 2; background-color: var(--bg-panel); border-right: 2px solid var(--accent-bordeaux); transform: translateX(0); }
+        .sidebar.collapsed .form-view { transform: translateX(-100%); }
+
+        .form-view h2 { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; margin-bottom: 0.5rem; padding-right: 3rem; }
+        .form-view p { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem; }
+        .contact-form { display: flex; flex-direction: column; gap: 1.2rem; }
+        .input-group { position: relative; }
+        .input-group label { position: relative; font-weight: 900; }
+
+        .input-group::before {
+            content: ""; position: absolute; inset: 0; pointer-events: none;
+            background: linear-gradient(to bottom, var(--accent-bordeaux) 0%, transparent 100%) top right / 4px 75% no-repeat; z-index: 20;
+        }
+        .input-group::after {
+            content: ""; position: absolute; inset: 0; pointer-events: none;
+            background: linear-gradient(to left, var(--accent-bordeaux) 0%, transparent 100%) top right / 75% 4px no-repeat; z-index: 20;
+        }
+
+        .contact-form input, .contact-form textarea {
+            width: 100%; padding: 1rem 1.2rem; background-color: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.03); border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main); border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 0.95rem;
+            transition: all 0.3s ease; resize: vertical;
+        }
+
+        .contact-form input::placeholder, .contact-form textarea::placeholder { color: rgba(148, 163, 184, 0.5); transition: opacity 0.3s ease; }
+        .contact-form input:focus, .contact-form textarea:focus {
+            outline: none; background-color: rgba(0, 0, 0, 0.5); border-color: rgba(255, 255, 255, 0.05);
+            border-bottom: 2px solid var(--accent-bordeaux); box-shadow: 0 10px 20px -10px rgba(181, 0, 6, 0.2);
+        }
+        .contact-form input:focus::placeholder, .contact-form textarea:focus::placeholder { opacity: 0; }
+
+        .privacy-checkbox { display: flex; align-items: center; justify-content: start; gap: 0.8rem; font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem; }
+        .privacy-checkbox input[type="checkbox"] {
+            appearance: none; -webkit-appearance: none; width: 20px; height: 20px; background-color: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 3px; cursor: pointer; position: relative; transition: all 0.3s ease; flex-shrink: 0;
+        }
+        .privacy-checkbox input[type="checkbox"]:hover { border-color: var(--accent-bordeaux); }
+        .privacy-checkbox input[type="checkbox"]:checked { background-color: var(--accent-bordeaux); border-color: var(--accent-bordeaux); }
+        .privacy-checkbox input[type="checkbox"]:checked::after {
+            content: ''; position: absolute; top: 45%; left: 50%; width: 6px; height: 12px; border: solid #ffc2c2; border-width: 0 2px 2px 0; transform: translate(-50%, -50%) rotate(45deg);
+        }
+        .privacy-checkbox label { cursor: pointer; line-height: 1.4; }
+        .privacy-checkbox a { color: var(--text-main); text-decoration: none; border-bottom: 1px dashed var(--accent-bordeaux); font-family: 'JetBrains Mono', monospace; transition: all 0.3s ease; }
+        .privacy-checkbox a:hover { color: var(--accent-bordeaux); border-bottom: 1px solid var(--accent-bordeaux); }
+
+        .contact-form button {
+            background-color: transparent; color: var(--accent-bordeaux); border: 1px solid var(--accent-bordeaux);
+            padding: 0.9rem; font-weight: 900; border-radius: 4px; cursor: pointer; transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; margin-top: 0.5rem; font-size: 1.1rem;
+        }
+        .contact-form button:hover { background-color: var(--accent-bordeaux); color: white; box-shadow: 0 5px 15px rgba(181, 0, 6, 0.3); transform: translateY(-2px); }
+
+        .profile-logo img { width: 40px; opacity: 0.5; margin-bottom: 2rem; z-index: 0; }
+        .profile-image-container { position: absolute; width: auto; height: auto; bottom: -5%; left: 0; margin: 0; transition: transform 0.4s ease; will-change: transform; }
+        .profile-image-container:hover { transform: scale(1.02); }
+        .profile-image { width: 100%; height: 100%; object-fit: cover; }
+
+        .profile-text {
+            z-index: 100; background: rgba(40, 40, 50, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px; padding: 1.5rem; margin-top: 5%; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .profile-text::before, .profile-text::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 20; }
+        .profile-text::before { background: linear-gradient(to bottom, var(--accent-bordeaux) 0%, transparent 100%) top left / 4px 75% no-repeat, linear-gradient(to top, var(--accent-bordeaux) 0%, transparent 100%) bottom right / 4px 75% no-repeat; }
+        .profile-text::after { background: linear-gradient(to right, var(--accent-bordeaux) 0%, transparent 100%) top left / 75% 4px no-repeat, linear-gradient(to left, var(--accent-bordeaux) 0%, transparent 100%) bottom right / 75% 4px no-repeat; }
+
+        .profile-text h1 { font-size: 1.3rem; line-height: 1.2; margin-bottom: 0.8rem; font-family: 'Inter', sans-serif; }
+        .profile-text h1 span { font-size: 0.9rem; color: rgb(255, 82, 82); font-family: 'JetBrains Mono', monospace; font-weight: 900; }
+        .profile-text p { font-size: 0.95rem; color: var(--text-main); line-height: 1.5; }
+
+        /* --- PŁYWAJĄCA NAWIGACJA --- */
+        .floating-nav-container {
+            position: fixed; top: 50%; right: 0; width: 250px; height: 90vh; transform: translate(100%, -50%);
+            background-color: var(--bg-panel); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-left: 2px solid var(--accent-bordeaux); border-top: 2px solid var(--accent-bordeaux);
+            border-bottom: 2px solid var(--accent-bordeaux); border-right: none; border-radius: 12px 0 0 12px;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.4); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 9999; display: flex; justify-content: start; align-items: start;
+        }
+
+        .floating-nav-container.active { transform: translate(0, -50%); }
+
+        .nav-arrow {
+            position: absolute; left: -48px; top: 50%; transform: translateY(-50%); width: 48px; height: 60px;
+            background-color: var(--bg-panel); border: 1px solid rgba(255, 255, 255, 0.05); border-right: none;
+            border-radius: 8px 0 0 8px; color: var(--accent-bordeaux); cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: background-color 0.3s, color 0.3s; animation: pulseArrow 2s infinite; 
+        }
+        .nav-arrow:hover { background-color: #1a1a1e; color: var(--accent-hover); }
+        .nav-arrow svg { width: 24px; height: 24px; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .floating-nav-container.active .nav-arrow svg { transform: rotate(180deg); }
+
+        @keyframes pulseArrow { 0% { box-shadow: -2px 0 5px rgba(157, 2, 8, 0); } 50% { box-shadow: -5px 0 15px rgba(157, 2, 7, 0.4); } 100% { box-shadow: -2px 0 5px rgba(157, 2, 8, 0); } }
+
+        .side-menu { display: flex; flex-direction: column; padding: 2rem 1.5rem; gap: 1.5rem; height: 100%; justify-content: start; align-items: center; width: 100%; }
+        .nav-links { display: flex; flex-direction: column; gap: 1.5rem; width: 100%; height: auto; justify-self: center; }
+        .side-menu a { display: flex; align-items: center; gap: 1rem; color: var(--text-muted); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 1rem; transition: color 0.3s, transform 0.3s; }
+        .side-menu a:hover, .side-menu a.active { color: var(--accent-bordeaux); transform: translateX(5px); }
+        .side-menu .icon { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; opacity: 0.8; margin-right: 10px; }
+        .icon img { width: 32px; }
+
+        /* --- PRAWA STRONA (Treść) --- */
+        .main-content { flex: 1; min-width: 0; position: relative; }
+
+        .story-section { background-color: var(--bg-dark); position: relative; z-index: 2; padding: 5rem 6rem; min-height: 100vh;}
+        .story-header { margin-bottom: 4rem; max-width: 800px; }
+        .story-header h2 { font-size: 2.5rem; line-height: 1.2; margin-bottom: 1.5rem; color: var(--text-main); }
+        .story-header p { font-family: 'JetBrains Mono', monospace; color: var(--text-muted); font-size: 1.1rem; }
+        .highlight { color: var(--accent-bordeaux); font-weight: 900 !important; }
+        .highlight-p { color: var(--accent-bordeaux); font-weight: 900 !important; }
+
+        .feature-block { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 5rem; position: relative; }
+        .feature-content {
+            width: 100%; background-color: var(--bg-panel); border: 1px solid rgba(166, 5, 5, 0.4);
+            border-radius: 12px; padding: 2.5rem; position: relative; z-index: 2; height: fit-content; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+        .feature-content h3 { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; margin-bottom: 1rem; }
+        .feature-content p { color: var(--text-muted); font-size: 1.05rem; }
+
+        /* --- STOPKA --- */
+        .site-footer {
+            width: 100%; background-color: #050506; border-top: 1px solid rgba(181, 0, 6, 0.3);
+            padding: 3rem 2rem; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 20; overflow: hidden;
+        }
+        .footer-decoration { flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--accent-bordeaux) 0, var(--accent-bordeaux) 10px, transparent 10px, transparent 20px); opacity: 0.15; }
+        .left-deco { margin-right: 4rem; }
+        .right-deco { margin-left: 4rem; }
+        .footer-content-wrapper { display: flex; flex-direction: column; align-items: center; gap: 2rem; max-width: 600px; text-align: center; }
+        .footer-logo img { width: 60px; height: auto; filter: grayscale(100%) opacity(0.5); transition: filter 0.4s ease, transform 0.4s ease; }
+        .footer-logo a:hover img { filter: grayscale(0%) opacity(1); transform: scale(1.05); }
+        .footer-contact { display: flex; gap: 2.5rem; justify-content: center; align-items: center; flex-wrap: wrap; }
+        .contact-link { display: flex; align-items: center; gap: 0.75rem; color: var(--text-main); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 500; transition: color 0.3s ease, transform 0.2s ease; }
+        .contact-link svg { width: 22px; height: 22px; color: var(--accent-bordeaux); transition: transform 0.3s ease; }
+        .contact-link:hover { color: var(--accent-hover); }
+        .contact-link:hover svg { transform: translateY(-3px); }
+        .footer-bottom { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+        .copyright { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0; }
+        .legal-links { font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; }
+        .legal-links a { color: inherit; text-decoration: none; transition: color 0.3s ease; }
+        .legal-links a:hover { color: var(--text-main); text-decoration: underline; }
+        .legal-links .separator { margin: 0 0.5rem; }
+
+        @media (max-width: 968px) {
+            .app-layout { flex-direction: column; }
+            .sidebar { width: 100%; max-width: 100%; height: 100dvh; position: relative; padding: 0; order: 2; overflow: hidden; border-right: none; border-top: 2px solid var(--accent-bordeaux); }
+            .sidebar-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 4rem 1.5rem 2rem 1.5rem; display: flex; flex-direction: column; justify-content: center; }
+            .form-view { z-index: 2; border-right: none; background-color: var(--bg-panel); padding: 7%; }
+            .sidebar.collapsed .form-view { transform: translateX(-100%); }
+            .profile-view { z-index: 1; justify-content: flex-start; padding-top: 5rem; }
+            .profile-image-container { position: relative; bottom: auto; left: 0; width: 100%; max-width: 400px; margin: 2rem auto 0 auto; }
+            .profile-text { margin-top: 0; }
+            .main-content { width: 100%; order: 1; }
+            .story-section { padding: 4rem 1.5rem; }
+            .story-header h2 { font-size: 2rem; }
+            .feature-block { flex-direction: column; margin-bottom: 4rem; padding: 0; }
+            .feature-content { width: 100%; margin-bottom: -2rem; padding: 2rem 1.5rem; z-index: 2; }
+            .site-footer { flex-direction: column; padding: 3rem 1.5rem; }
+            .footer-decoration { display: none; }
+            .footer-contact { flex-direction: column; gap: 1.5rem; }
+        }
+        .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+
+    <aside class="sidebar" id="mainSidebar">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Zwiń/Rozwiń panel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+
+        <div class="sidebar-view form-view active" id="formView">
+            <h2 id="t-form-h2">Porozmawiajmy o <span class="highlight">Twoim</span> projekcie</h2>
+            <p id="t-form-p">Potrzebujesz wydajnego sklepu, aplikacji webowej lub cyfryzacji bazy danych? Zostaw wiadomość.</p>
+            
+            <form class="contact-form" onsubmit="event.preventDefault();">
+                <div class="input-group">
+                    <input type="text" id="name" placeholder=" " required>
+                    <label for="name" id="t-label-name">Imię lub nazwa firmy</label>
+                    <div class="input-line"></div>
+                </div>
+                
+                <div class="input-group">
+                    <input type="email" id="email" placeholder=" " required>
+                    <label for="email" id="t-label-email">Adres E-mail</label>
+                    <div class="input-line"></div>
+                </div>
+                
+                <div class="input-group">
+                    <textarea id="message" rows="4" placeholder=" " required></textarea>
+                    <label for="message" id="t-label-msg">Opisz krótko, czego potrzebujesz...</label>
+                    <div class="input-line"></div>
+                </div>
+
+                <div class="privacy-checkbox">
+                    <input type="checkbox" id="privacy" required>
+                    <label for="privacy" id="t-label-privacy">Akceptuję <a href="polityka-prywatnosci.html">politykę prywatności</a>.</label>
+                </div>
+
+                <button type="submit" id="t-btn-submit">_wyślij_wiadomość</button>
+            </form>
+        </div>
+
+        <div class="sidebar-view profile-view" id="profileView">
+            <div class="profile-text">
+                <h1 id="t-prof-h1">Jakub Jąderko | <span>Full-stack web developer</span></h1>
+                <p id="t-prof-p">Programista - samouk, który uważa, że szkolna ława znacznie upośledza zdolności przyjmowania wiedzy. Pracę traktuje nieomal jak pasję, a jako remedium na ból pleców spowodowany wielogodzinnymi sesjami spędzonymi przed komputerem stosuje jogę.</p>
+            </div>
+             <div class="profile-image-container">
+                <img src="Images/strona_glowna/deweloper2.webp" alt="Jakub Jąderko - Twórca Stron Web" class="profile-image">
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        
+        <div class="floating-nav-container" id="navContainer">
+            <button class="nav-arrow" id="navToggle" aria-label="Rozwiń menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6" />
+                </svg>
+            </button>
+            
+            <nav class="side-menu">
+                <div class="nav-links" style="margin-top: 3rem;">
+                <div style="height: 2px; width: 100%; background-color: var(--accent-bordeaux);"></div>
+                <a href="index.html">
+                    <span class="icon"> <img src="Logo/android-chrome-192x192.png" alt="Logo Jakub Jąderko"> </span>
+                    <span class="text" id="t-nav-home">_Strona_główna</span>
+                </a>
+                <a href="polityka-prywatnosci.html" class="active">
+                    <span class="text">_Polityka_prywatności</span>
+                </a>
+                <a href="regulamin.html">
+                    <span class="text">_Regulamin</span>
+                </a>
+                <div style="height: 2px; width: 100%; background-color: var(--accent-bordeaux);"></div>
+               </div>
+            </nav>
+        </div>
+
+        <section class="story-section" id="legal-content">
+            <div class="story-header" style="margin-top: 2rem;">
+                <h2>Polityka <span class="highlight" style="font-size: inherit;">Prywatności</span></h2>
+          
+            </div>
+
+            <article class="feature-block">
+                <div class="feature-content" style="width: 100%; margin-bottom: 2rem;">
+                    <h3>_Ochrona_Danych</h3>
+                    
+                    <p style="margin-bottom: 1.5rem;"><span class="highlight-p">01. Kto jest administratorem danych?</span><br>
+                    Administratorem danych osobowych zbieranych za pośrednictwem tej strony jest Jakub Jąderko. W razie pytań, możesz złapać mnie pod adresem: <strong>biuro@mlogistyk.pl</strong>.</p>
+
+                    <p style="margin-bottom: 1.5rem;"><span class="highlight-p">02. Jakie dane zbieram i po co?</span><br>
+                    Jeżeli skorzystasz z formularza kontaktowego, przetwarzam Twoje imię (lub nazwę firmy), adres e-mail oraz treść wiadomości. Robię to <strong>wyłącznie w celu odpowiedzi na Twoje zapytanie</strong> (podstawa prawna: art. 6 ust. 1 lit. b oraz f RODO).</p>
+
+                    <p style="margin-bottom: 1.5rem;"><span class="highlight-p">03. Jak długo trzymam dane?</span><br>
+                    Tylko tak długo, jak to konieczne do załatwienia sprawy, z którą do mnie piszesz, lub do czasu przedawnienia ewentualnych roszczeń. Nie tworzę ukrytych baz do mailingu.</p>
+
+                    <p style="margin-bottom: 1.5rem;"><span class="highlight-p">04. Kto ma dostęp do danych?</span><br>
+                    Nikt poza mną oraz zaufanymi dostawcami usług IT (np. firmą hostingową, na której serwerach utrzymywana jest ta strona). Nie sprzedaję danych.</p>
+
+                    <p style="margin-bottom: 1.5rem;"><span class="highlight-p">05. Ciasteczka (Cookies)</span><br>
+                    Strona używa <strong>wyłącznie</strong> ciasteczek niezbędnych (technicznych) do jej prawidłowego działania i zapamiętywania preferencji (np. wybranego języka). Nie podpinam tu Google Analytics, Facebook Pixela ani innych narzędzi śledzących.</p>
+
+                    <p><span class="highlight-p">06. Twoje prawa (RODO)</span><br>
+                    Masz prawo dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania oraz prawo do wniesienia sprzeciwu. Wystarczy, że napiszesz do mnie maila.</p>
+                </div>
+            </article>
+        </section>
+
+    </main>
+    </div>
+
+<footer class="site-footer">
+    <div class="footer-decoration left-deco"></div>
+    <div class="footer-content-wrapper">
+        <div class="footer-logo">
+            <a href="index.html">
+                <img src="Logo/android-chrome-192x192.png" alt="Jakub Jąderko - Logo Stopka" loading="lazy">
+            </a>
+        </div>
+        <div class="footer-contact">
+            <a href="tel:+48500156450" class="contact-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                +48 500 156 450
+            </a>
+            <a href="mailto:biuro@mlogistyk.pl" class="contact-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                biuro@mlogistyk.pl
+            </a>
+        </div>
+        <div class="footer-bottom">
+            <p class="copyright">© 2026 Jakub Jąderko. Wszelkie prawa zastrzeżone.</p>
+            <div class="legal-links">
+                <a href="polityka-prywatnosci.html">Polityka prywatności</a>
+                <span class="separator">|</span>
+                <a href="regulamin.html">Regulamin</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-decoration right-deco"></div>
+</footer>
+
+<script defer>
+    const navToggle = document.getElementById('navToggle');
+    const navContainer = document.getElementById('navContainer');
+    navToggle.addEventListener('click', () => { navContainer.classList.toggle('active'); });
+    document.addEventListener('click', (event) => {
+        const isClickInsideMenu = navContainer.contains(event.target);
+        if (!isClickInsideMenu && navContainer.classList.contains('active')) { navContainer.classList.remove('active'); }
+    });
+
+    const sidebar = document.getElementById('mainSidebar');
+    const sidebarToggleBtn = document.getElementById('sidebarToggle');
+    sidebarToggleBtn.addEventListener('click', () => { sidebar.classList.toggle('collapsed'); });
+</script>
+
+</body>
+</html>

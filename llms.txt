@@ -1,0 +1,19 @@
+# Jakub Jąderko - Web Development & Data Solutions
+
+> Portfolio and professional profile of Jakub Jąderko, a self-taught full-stack web developer based in Poland. Specializing in high-performance web systems, custom e-commerce setups, SEO-driven architecture, and clean design.
+
+## Core Information
+- **Developer:** Jakub Jąderko
+- **Focus:** Custom web development (No-Code/WordPress alternative), database digitization, frontend optimization.
+- **Tech Stack Philosophy:** Clean code written natively in code editors for maximum performance, bulletproof mobile layouts, and strict SEO compliance.
+- **Tone/Style:** Bold, non-generic, high-contrast bordeaux aesthetic.
+
+## Available Pages
+- [Home Page](https://jakubjaderko.pl/) - Core portfolio, values, presentation of work philosophy, and contact form.
+- [Privacy Policy](https://jakubjaderko.pl/polityka-prywatnosci.html) - Transparent data protection information regarding the contact form and strict no-tracking cookies policy.
+- [Terms of Service](https://jakubjaderko.pl/regulamin.html) - General rules for using the portfolio website and contact methods.
+
+## Contact & Logistics
+- **Phone:** +48 500 156 450
+- **Email:** biuro@mlogistyk.pl
+- **Partner System:** [mLogistyk](https://mlogistyk.pl/)
