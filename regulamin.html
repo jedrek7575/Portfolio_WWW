@@ -267,6 +267,79 @@
     white-space: nowrap;
     border: 0;
 }
+
+
+  .success-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: var(--bg-panel);
+            backdrop-filter: blur(10px);
+            z-index: 25;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 3rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .success-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .success-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 3px solid var(--accent-bordeaux);
+            position: relative;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 30px rgba(181, 0, 6, 0.4);
+            transform: scale(0);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .success-overlay.active .success-circle {
+            transform: scale(1);
+        }
+
+        .success-circle::after {
+            content: '';
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            width: 18px;
+            height: 35px;
+            border: solid #ffc2c2;
+            border-width: 0 4px 4px 0;
+            transform: translate(-50%, -50%) rotate(45deg);
+            opacity: 0;
+            transition: opacity 0.3s ease 0.4s;
+        }
+
+        .success-overlay.active .success-circle::after {
+            opacity: 1;
+        }
+
+        .success-overlay p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            line-height: 1.6;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+        }
+
+        .success-overlay.active p {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -310,6 +383,10 @@
 
                 <button type="submit" id="t-btn-submit">_wyślij_wiadomość</button>
             </form>
+                        <div class="success-overlay" id="successOverlay">
+            <div class="success-circle"></div>
+            <p id="t-success-p">Dziękuję za&nbsp;wiadomość!<br><br>Skontaktuję się z&nbsp;Tobą tak szybko, jak to będzie możliwe.</p>
+        </div>
         </div>
 
         <div class="sidebar-view profile-view" id="profileView">
