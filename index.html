@@ -1498,6 +1498,15 @@
                     <span class="icon"> <img src="Logo/android-chrome-192x192.png" loading="lazy" decoding="async" fetchpriority="low" alt="Logo Jakub Jąderko - Twórca unikalnych stron internetowych i aplikacji webowych" width="192" height="192"> </span>
                     <span class="text" id="t-nav-home">_Strona_główna</span>
                 </a>
+                                <a href="portfolio.html">
+                    <span class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px; height:24px;">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                    </span>
+                    <span class="text" id="t-nav-port">_Portfolio</span>
+                </a>
                 <a href="https://mlogistyk.pl/">
                     <span class="icon"> <img src="Logo/Icons/mlogistyk-192x192.png" alt="mLogistyk - nowoczesna i łatwa w obsłudze aplikacja do zarządzania dostawami" loading="lazy" decoding="async" fetchpriority="low" width="192" height="192"> </span>
                     <span class="text">_mLogistyk</span>
@@ -1890,25 +1899,26 @@
         }
     };
 
-    // --- FUNKCJA ZMIANY JĘZYKA (Wzmocniona pod SEO) ---
-    function setLang(lang) {
-        document.documentElement.lang = lang;
-        
-        const dict = translations[lang];
-        for (const [id, text] of Object.entries(dict)) {
-            const el = document.getElementById(id);
-            if (el) {
-                el.innerHTML = text;
+        function setLang(lang) {
+            document.documentElement.lang = lang;
+            localStorage.setItem('siteLanguage', lang);
+            
+            const dict = translations[lang];
+            for (const [id, text] of Object.entries(dict)) {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = text;
             }
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.dataset.lang === lang) btn.classList.add('active');
+            });
         }
-        
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if(btn.dataset.lang === lang) {
-                btn.classList.add('active');
-            }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('siteLanguage') || 'pl';
+            setLang(savedLang);
         });
-    }
 </script>
 <script src="script.js" defer></script>
 

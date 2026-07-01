@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Portfolio | Jakub Jąderko | Web Development & Data Solutions</title>
+    <meta name="description" content="Zobacz moje realizacje. Wyjątkowe strony internetowe i aplikacje webowe o unikalnym klimacie.">
+    <meta name="theme-color" content="#0a0a0c">
+    
+    <link rel="icon" href="/Logo/favicon.ico" sizes="any">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500;900&display=swap" rel="stylesheet">
+    </noscript>
+
+    <style>
+        /* === ZMIENNE === */
+        :root {
+            --bg-dark: #0a0a0c;
+            --bg-panel: #1d1d28;
+            --bg-card: #15151e;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent-bordeaux: #b50006;
+            --accent-hover: #d00000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .highlight { color: var(--accent-bordeaux); font-weight: 900 !important; }
+
+        /* === PRZYCISK WŁĄCZAJĄCY FORMULARZ (Z LEWEJ) === */
+        .sidebar-toggle {
+            position: fixed;
+            top: 2rem; 
+            left: 2rem;
+            background: rgba(29, 29, 40, 0.9);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            color: var(--text-muted);
+            width: 50px; 
+            height: 50px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            cursor: pointer; 
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .sidebar-toggle:hover {
+            color: var(--accent-bordeaux); 
+            border-color: var(--accent-bordeaux);
+            background-color: rgba(181, 0, 6, 0.1);
+            transform: scale(1.05);
+        }
+
+        /* === SIDEBAR / FORMULARZ (Wysuwany z lewej jako OVERLAY) === */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0; 
+            left: -650px;
+            width: 600px;
+            max-width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-panel);
+            border-right: 2px solid var(--accent-bordeaux);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.8);
+            z-index: 1001;
+            transition: left 1s cubic-bezier(0.19, 1, 0.22, 1);
+            overflow-y: auto;
+            padding: 3rem 2rem;
+        }
+        .sidebar-overlay.active {
+            left: 0;
+        }
+        .close-sidebar-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.3s ease;
+            z-index: 1002;
+        }
+        .close-sidebar-btn:hover { color: var(--accent-bordeaux); }
+
+        .form-view h2 { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; margin-bottom: 0.5rem; margin-top: 2rem;}
+        .form-view p { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
+        
+        /* Formularz Style */
+        .contact-form { display: flex; flex-direction: column; gap: 1.2rem; }
+        .input-group { position: relative; }
+        .input-group label { display: block; font-weight: 900; font-size: 0.9rem; margin-bottom: 0.3rem;}
+        .contact-form input, .contact-form textarea {
+            width: 100%; padding: 1rem 1.2rem; background-color: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.03); border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main); border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 0.95rem; transition: all 0.3s ease; resize: vertical;
+        }
+        .contact-form input:focus, .contact-form textarea:focus {
+            outline: none; background-color: rgba(0, 0, 0, 0.5); border-bottom: 2px solid var(--accent-bordeaux);
+        }
+        .privacy-checkbox { display: flex; align-items: flex-start; gap: 0.8rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; }
+        .privacy-checkbox input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent-bordeaux); cursor: pointer; flex-shrink: 0; margin-top: 2px;}
+        .privacy-checkbox a { color: var(--text-main); border-bottom: 1px dashed var(--accent-bordeaux); font-family: 'JetBrains Mono', monospace; text-decoration: none; }
+        .contact-form button {
+            background-color: transparent; color: var(--accent-bordeaux); border: 1px solid var(--accent-bordeaux);
+            padding: 0.9rem; font-weight: 900; border-radius: 4px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; transition: all 0.3s ease; margin-top: 1rem;
+        }
+        .contact-form button:hover { background-color: var(--accent-bordeaux); color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(181, 0, 6, 0.3);}
+
+        .success-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: var(--bg-panel);
+            backdrop-filter: blur(10px);
+            z-index: 25;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 3rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .success-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .success-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 3px solid var(--accent-bordeaux);
+            position: relative;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 30px rgba(181, 0, 6, 0.4);
+            transform: scale(0);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .success-overlay.active .success-circle {
+            transform: scale(1);
+        }
+
+        .success-circle::after {
+            content: '';
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            width: 18px;
+            height: 35px;
+            border: solid #ffc2c2;
+            border-width: 0 4px 4px 0;
+            transform: translate(-50%, -50%) rotate(45deg);
+            opacity: 0;
+            transition: opacity 0.3s ease 0.4s;
+        }
+
+        .success-overlay.active .success-circle::after {
+            opacity: 1;
+        }
+
+        .success-overlay p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            line-height: 1.6;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+        }
+
+        .success-overlay.active p {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === HEADER NA ŚRODKU === */
+        .portfolio-header {
+            position: relative;
+            width: 100%;
+            min-height: 45vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 4rem 2rem 2rem 2rem;
+            overflow: hidden;
+        }
+        
+        .header-bg {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('Images/Hero/mainpage-poster.webp') center 20%/cover no-repeat;
+            opacity: 0.3;
+            z-index: 0;
+            pointer-events: none;
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+
+        .header-content h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        
+        .header-content p {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* === GŁÓWNA SEKCJA PORTFOLIO === */
+        .portfolio-section {
+            position: relative;
+            z-index: 5;
+            padding: 2rem;
+            width: 100%;
+            height: 100vh; 
+            min-height: 600px;
+            max-height: 1200px;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: transparent;
+        }
+
+        .carousel-wrapper {
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            max-width: 1400px;
+            position: relative;
+            overflow: hidden; 
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            display: flex;
+        }
+
+        .carousel-track {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none; 
+            -ms-overflow-style: none;  
+        }
+        .carousel-track::-webkit-scrollbar { display: none; }
+
+        .project-card {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+            scroll-snap-align: center;
+            background-color: var(--bg-panel);
+            border: 1px solid rgba(181, 0, 6, 0.3);
+            padding: 1.3rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-card::before {
+            content: "+"; position: absolute; top: 15px; right: 20px;
+            color: var(--accent-bordeaux); font-family: 'JetBrains Mono', monospace; opacity: 0.5;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            padding-bottom: 1rem;
+            flex-shrink: 0;
+        }
+
+        .card-header h2 { font-size: 2.2rem; font-family: 'JetBrains Mono', monospace; color: var(--text-main); }
+        .tech-stack {
+            display: none;
+            font-size: 0.9rem; color: var(--accent-bordeaux); font-family: 'JetBrains Mono', monospace;
+            background: rgba(181,0,6, 0.1); padding: 0.4rem 1rem; border-radius: 4px; border: 1px solid rgba(181,0,6, 0.3);
+        }
+
+        /* KONTENER ZAWARTOŚCI Z POSITION RELATIVE */
+        .card-content {
+            position: relative; /* Wymagane dla absolute child na desktopie */
+            display: flex;
+            gap: 4rem;
+            flex: 1;
+            min-height: 0; 
+            align-items: stretch;
+        }
+
+        .card-image-wrapper {
+            overflow: hidden;
+            border-radius: 8px;
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0);
+            position: relative;
+            z-index: 1; /* Pod spodem na telefonach */
+        }
+
+        .card-image-wrapper img {
+            height: 50vh;
+            aspect-ratio: 3 / 2;
+            object-fit: cover;
+            object-position: top center;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card-body {
+            position: absolute;
+            width: 50%;
+            right: 2%;
+            bottom: 10%;
+            background: rgba(40, 40, 50, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(181, 0, 6, 0.45);
+            border-radius: 8px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 1.5rem;
+            margin-top: 0;
+            overflow-y: auto;
+            padding: 2rem;
+            z-index: 2; /* Zawsze na wierzchu */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .card-body p { 
+            color: var(--text-muted); 
+            font-size: 1.15rem; 
+            max-width: 100%; 
+            line-height: 1.8;
+            margin: 0;
+        }
+
+        .live-btn {
+            background-color: transparent; color: var(--text-main); border: 1px solid var(--text-muted);
+            padding: 0.8rem 2rem; font-family: 'JetBrains Mono', monospace; text-decoration: none;
+            border-radius: 4px; transition: all 0.3s ease; white-space: nowrap; font-size: 1rem;
+        }
+        .live-btn:hover { border-color: var(--accent-bordeaux); color: var(--accent-bordeaux); background-color: rgba(181,0,6, 0.1); }
+
+        .carousel-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .ctrl-btn {
+            background: var(--bg-panel); border: 1px solid var(--accent-bordeaux); color: var(--accent-bordeaux);
+            width: 55px; height: 55px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+            transition: all 0.3s ease; box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        .ctrl-btn:hover { background: var(--accent-bordeaux); color: white; box-shadow: 0 0 20px rgba(181,0,6,0.4); transform: translateY(-2px);}
+
+        /* === PŁYWAJĄCA NAWIGACJA === */
+        .floating-nav-container {
+            position: fixed; top: 50%; right: 0; width: 250px; height: 90vh; transform: translate(100%, -50%);
+            background-color: var(--bg-panel); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-left: 2px solid var(--accent-bordeaux); border-top: 2px solid var(--accent-bordeaux); border-bottom: 2px solid var(--accent-bordeaux); border-right: none;
+            border-radius: 12px 0 0 12px; box-shadow: -5px 0 20px rgba(0, 0, 0, 0.4); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;
+            display: flex; justify-content: start; align-items: start;
+        }
+        .floating-nav-container.active { transform: translate(0, -50%); }
+        .nav-arrow {
+            position: absolute; left: -48px; top: 50%; transform: translateY(-50%); width: 48px; height: 60px;
+            background-color: var(--bg-panel); border: 1px solid rgba(255, 255, 255, 0.05); border-right: none; border-radius: 8px 0 0 8px;
+            color: var(--accent-bordeaux); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background-color 0.3s, color 0.3s; animation: pulseArrow 2s infinite; 
+        }
+        .nav-arrow:hover { background-color: #1a1a1e; color: var(--accent-hover); }
+        .nav-arrow svg { width: 24px; height: 24px; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .floating-nav-container.active .nav-arrow svg { transform: rotate(180deg); }
+        @keyframes pulseArrow { 0% { box-shadow: -2px 0 5px rgba(157, 2, 8, 0); } 50% { box-shadow: -5px 0 15px rgba(157, 2, 7, 0.4); } 100% { box-shadow: -2px 0 5px rgba(157, 2, 8, 0); } }
+        .side-menu { display: flex; flex-direction: column; padding: 2rem 1.5rem; gap: 1.5rem; height: 100%; justify-content: start; align-items: center; width: 100%; }
+        .nav-links { display: flex; flex-direction: column; gap: 1.5rem; width: 100%; justify-self: center; }
+        .side-menu a { display: flex; align-items: center; gap: 1rem; color: var(--text-muted); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 1rem; transition: color 0.3s, transform 0.3s; }
+        .side-menu a:hover, .side-menu a.active { color: var(--accent-bordeaux); transform: translateX(5px); }
+        .side-menu .icon img { width: 32px; height: 32px; opacity: 0.8;}
+        .lang-switcher-container { display: flex; align-items: center; gap: 1rem; margin-top: 5%; }
+        .lang-switcher-container .icon { color: var(--text-muted); width: 24px;}
+        .lang-buttons { display: flex; gap: 0.5rem; }
+        .lang-btn { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 0.4rem 0.6rem; border-radius: 4px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; transition: all 0.3s ease; }
+        .lang-btn:hover, .lang-btn.active { color: var(--accent-bordeaux); border-color: var(--accent-bordeaux); background: rgba(181, 0, 6, 0.1); transform: translateY(-2px); }
+
+        /* === STOPKA === */
+        .site-footer { width: 100%; background-color: #050506; border-top: 1px solid rgba(181, 0, 6, 0.3); padding: 3rem 2rem; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 20; overflow: hidden; margin-top: auto;}
+        .footer-decoration { flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--accent-bordeaux) 0, var(--accent-bordeaux) 10px, transparent 10px, transparent 20px); opacity: 0.15; }
+        .left-deco { margin-right: 4rem; } .right-deco { margin-left: 4rem; }
+        .footer-content-wrapper { display: flex; flex-direction: column; align-items: center; gap: 2rem; max-width: 600px; text-align: center; }
+        .footer-logo img { width: 60px; height: auto; filter: grayscale(100%) opacity(0.5); transition: filter 0.4s ease, transform 0.4s ease; }
+        .footer-logo a:hover img { filter: grayscale(0%) opacity(1); transform: scale(1.05); }
+        .footer-contact { display: flex; gap: 2.5rem; justify-content: center; align-items: center; flex-wrap: wrap; }
+        .contact-link { display: flex; align-items: center; gap: 0.75rem; color: var(--text-main); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 500; transition: color 0.3s ease, transform 0.2s ease; }
+        .contact-link svg { width: 22px; height: 22px; color: var(--accent-bordeaux); transition: transform 0.3s ease; }
+        .contact-link:hover { color: var(--accent-hover); } .contact-link:hover svg { transform: translateY(-3px); }
+        .footer-bottom { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+        .copyright { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0; }
+        .legal-links { font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; }
+        .legal-links a { color: inherit; text-decoration: none; transition: color 0.3s ease; }
+        .legal-links a:hover { color: var(--text-main); text-decoration: underline; }
+        .legal-links .separator { margin: 0 0.5rem; }
+
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+        /* === RESPONSIVE (MOBILE) PERFEKCYJNE === */
+        @media (max-width: 968px) {
+            .header-content h1 { font-size: 2.5rem; }
+            .header-content p { font-size: 0.95rem; }
+            .portfolio-header { padding: 5rem 1.5rem 2rem 1.5rem; min-height: auto; }
+            
+            .portfolio-section {
+                height: auto;
+                min-height: 100vh;
+                padding: 2rem 0;
+            }
+            .carousel-wrapper { 
+                border-radius: 0; 
+                box-shadow: none; 
+                border-top: 1px solid rgba(181,0,6,0.2); 
+                border-bottom: 1px solid rgba(181,0,6,0.2);
+            }
+            .project-card { 
+                padding: 1.5rem 1rem; /* Mniejszy padding główny karty, więcej miejsca dla treści */
+                border: none; 
+                background-color: var(--bg-dark);
+                height: auto;
+            }
+            .card-header { margin-bottom: 1rem; }
+            .card-header h2 { font-size: 1.5rem; }
+            
+            .card-content {
+                flex-direction: column; 
+                align-items: center; 
+                gap: 0; 
+                padding-bottom: 1rem;
+            }
+            
+            /* Zdjęcie na pełną szerokość telefonu */
+            .card-image-wrapper {
+                width: 100%;
+            }
+            .card-image-wrapper img {
+                height: auto; /* Anuluje twarde 50vh */
+                width: 100%;
+                aspect-ratio: 3 / 2; /* Trzyma ładne proporcje dla 2400x1600 */
+            }
+            
+            /* RESET I NOWY WYGLĄD PANELA TEKSTOWEGO NA TELEFON (nakładanie od dołu) */
+            .card-body { 
+                position: relative; /* Wyłącza absolute na telefonach */
+                width: 95%; /* Trzyma się niemal brzegów, ale równo */
+                right: auto;
+                bottom: auto;
+                margin-top: -15%; /* Nachodzi elegancko na zdjęcie od dołu */
+                padding: 1.5rem;
+                align-items: center; /* Centrowanie zawartości dla smartfona */
+                text-align: center;
+                gap: 1.2rem;
+            }
+            
+            .card-body p { 
+                font-size: 1rem; 
+            }
+            
+            .live-btn { width: 100%; text-align: center; }
+            
+            .sidebar-overlay { width: 100%; left: -100%; padding: 2rem 1.5rem;}
+            .site-footer { flex-direction: column; padding: 3rem 1.5rem; }
+            .footer-decoration { display: none; }
+            .footer-contact { flex-direction: column; gap: 1.5rem; }
+            .carousel-controls { margin-top: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PRZYCISK POKAZUJĄCY FORMULARZ -->
+    <button class="sidebar-toggle" id="openSidebarBtn" aria-label="Otwórz kontakt">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+    </button>
+
+    <!-- FORMULARZ KONTAKTOWY Z LEWEJ (OVERLAY) -->
+    <aside class="sidebar-overlay" id="contactSidebar">
+        <button class="close-sidebar-btn" id="closeSidebarBtn" aria-label="Zamknij">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+
+        <div class="form-view">
+            <h2 id="t-form-h2">Porozmawiajmy o&nbsp;<span class="highlight">Twoim</span> projekcie</h2>
+            <p id="t-form-p">Potrzebujesz wydajnego sklepu, aplikacji webowej lub cyfryzacji bazy danych? Zostaw wiadomość.</p>
+            
+            <form class="contact-form" id="contactForm">
+                <div class="input-group">
+                    <label for="name" id="t-label-name">Imię lub nazwa firmy</label>
+                    <input type="text" id="name" placeholder="np. Jan Kowalski" required>
+                </div>
+                <div class="input-group">
+                    <label for="email" id="t-label-email">Adres E-mail</label>
+                    <input type="email" id="email" placeholder="jan@example.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="message" id="t-label-msg">Opisz krótko, czego potrzebujesz...</label>
+                    <textarea id="message" rows="4" placeholder="Opisz swój projekt..." required></textarea>
+                </div>
+                <div class="privacy-checkbox">
+                    <input type="checkbox" id="privacy" required>
+                    <label for="privacy" id="t-label-privacy">Akceptuję <a href="polityka-prywatnosci.html">politykę prywatności</a>.</label>
+                </div>
+                <button type="submit" id="t-btn-submit">_wyślij_wiadomość</button>
+            </form>
+            <div class="success-overlay" id="successOverlay">
+                <div class="success-circle"></div>
+                <p id="t-success-p">Dziękuję za&nbsp;wiadomość!<br><br>Skontaktuję się z&nbsp;Tobą tak szybko, jak to będzie możliwe.</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- NAWIGACJA Z PRAWEJ -->
+    <div class="floating-nav-container" id="navContainer">
+        <button class="nav-arrow" id="navToggle" aria-label="Rozwiń menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6" /></svg>
+        </button>
+        <nav class="side-menu">
+             <div class="lang-switcher-container">
+                <span class="sr-only">Wybór języka:</span>
+                <span class="icon"> 
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                </span>
+                <div class="lang-buttons">
+                    <button class="lang-btn active" data-lang="pl" onclick="setLang('pl')">PL</button>
+                    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+                    <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
+                </div>
+            </div>
+
+            <div class="nav-links">
+                <div style="height: 2px; width: 100%; background-color: var(--accent-bordeaux);"></div>
+                <a href="index.html">
+                    <span class="icon"> <img src="Logo/android-chrome-192x192.png" alt="Strona główna"> </span>
+                    <span class="text" id="t-nav-home">_Strona_główna</span>
+                </a>
+                <a href="portfolio.html" class="active">
+                    <span class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px; height:24px;">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                    </span>
+                    <span class="text" id="t-nav-port">_Portfolio</span>
+                </a>
+                <a href="https://mlogistyk.pl/">
+                    <span class="icon"> <img src="Logo/Icons/mlogistyk-192x192.png" alt="mLogistyk"> </span>
+                    <span class="text">_mLogistyk</span>
+                </a>
+                <div style="height: 2px; width: 100%; background-color: var(--accent-bordeaux);"></div>
+           </div>
+        </nav>
+    </div>
+
+    <!-- === HEADER === -->
+    <header class="portfolio-header">
+        <div class="header-bg"></div>
+        <div class="header-content">
+            <h1 id="t-port-title">Wybrane <span class="highlight">Projekty</span>.</h1>
+            <p id="t-port-desc">_Oto systemy, które stworzyłem, by pomagać biznesom wchodzić na wyższy poziom.</p>
+        </div>
+    </header>
+
+    <!-- === SEKCJA PORTFOLIO === -->
+    <section class="portfolio-section">
+        <div class="carousel-wrapper">
+            <div class="carousel-track" id="portfolioCarousel">
+                
+                <!-- PROJEKT 1 -->
+                <article class="project-card">
+                    <div class="card-header">
+                        <h2>mLogistyk</h2>
+                        <span class="tech-stack">Aplikacja Webowa</span>
+                    </div>
+
+                    <div class="card-content">
+                        <div class="card-image-wrapper">
+                            <img src="Images/Portfolio/Wizytowki/mlogistyki.png" alt="mLogistyk Preview" loading="lazy">
+                        </div>
+                        <div class="card-body">
+                            <p id="t-proj1-desc">Kompleksowa aplikacja klasy <span class="highlight">SaaS</span> do zarządzania flotą i dostawami. Stworzona od zera, z myślą o minimalizowaniu formalności i maksymalnej optymalizacji czasu pracy kierowców.</p>
+                            <a href="https://mlogistyk.pl" target="_blank" class="live-btn" id="t-btn-live1">_zobacz_na_żywo</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- PROJEKT 2 -->
+                <article class="project-card">
+                    <div class="card-header">
+                        <h2>System E-commerce</h2>
+                        <span class="tech-stack">Next.js / Stripe API</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-image-wrapper">
+                            <img src="Images/Portfolio/Wizytowki/altprl.png" alt="Sklep Preview" loading="lazy">
+                        </div>
+                        <div class="card-body">
+                            <p id="t-proj2-desc">Nowoczesny, niesamowicie szybki sklep internetowy. Design oparty na minimalizmie połączony z bezbłędną architekturą, <span class="highlight">zwiększył konwersję o 40%</span> względem starego systemu gotowca.</p>
+                            <a href="https://alternatywny-prl.pl" target="_blank" class="live-btn" id="t-btn-live2">_zobacz_na_żywo</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- PROJEKT 3 -->
+                <article class="project-card">
+                    <div class="card-header">
+                        <h2>Strona wizytówkowa</h2>
+                        <span class="tech-stack">HTML / CSS / JS</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-image-wrapper">
+                            <img src="Images/Portfolio/Wizytowki/instalserwis.png" alt="InstalSerwis Preview" loading="lazy">
+                        </div>
+                        <div class="card-body">
+                            <p id="t-proj3-desc">Profesjonalna witryna firmowa, zaprojektowana z myślą o budowaniu zaufania i przejrzystej prezentacji usług. Świetna optymalizacja pod urządzenia mobilne i nowoczesny design zaowocowały <span class="highlight">znacznym wzrostem zapytań ofertowych</span> od nowych klientów.</p>
+                            <a href="https://instalserwis.eu" target="_blank" class="live-btn" id="t-btn-live3">_zobacz_na_żywo</a>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+
+        <!-- PRZYCISKI STEROWANIA -->
+        <div class="carousel-controls">
+            <button class="ctrl-btn" id="btnPrev" aria-label="Poprzedni">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="ctrl-btn" id="btnNext" aria-label="Następny">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+        </div>
+    </section>
+
+    <!-- === STOPKA === -->
+    <footer class="site-footer">
+        <div class="footer-decoration left-deco"></div>
+        <div class="footer-content-wrapper">
+            <div class="footer-logo">
+                <a href="index.html">
+                    <img src="Logo/android-chrome-192x192.png" alt="Jakub Jąderko - Logo" loading="lazy" width="192" height="192">
+                </a>
+            </div>
+            <div class="footer-contact">
+                <a href="tel:+48500156450" class="contact-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    +48 500 156 450
+                </a>
+                <a href="mailto:biuro@mlogistyk.pl" class="contact-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    biuro@mlogistyk.pl
+                </a>
+            </div>
+            <div class="footer-bottom">
+                <p class="copyright" id="t-foot-copy">© 2026 Jakub Jąderko. Wszelkie prawa zastrzeżone.</p>
+                <div class="legal-links">
+                    <a href="polityka-prywatnosci.html" id="t-foot-priv">Polityka prywatności</a>
+                    <span class="separator">|</span>
+                    <a href="regulamin.html" id="t-foot-reg">Regulamin</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-decoration right-deco"></div>
+    </footer>
+
+    <script defer>
+        // --- OBSŁUGA FORMULARZA Z LEWEJ (OVERLAY) ---
+        const sidebar = document.getElementById('contactSidebar');
+        const openBtn = document.getElementById('openSidebarBtn');
+        const closeBtn = document.getElementById('closeSidebarBtn');
+
+        openBtn.addEventListener('click', () => {
+            sidebar.classList.add('active');
+        });
+        closeBtn.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+
+        // --- OBSŁUGA PRAWOSKRZYDŁOWEJ NAWIGACJI ---
+        const navToggle = document.getElementById('navToggle');
+        const navContainer = document.getElementById('navContainer');
+        navToggle.addEventListener('click', () => navContainer.classList.toggle('active'));
+        
+        document.addEventListener('click', (event) => {
+            if (!navContainer.contains(event.target) && navContainer.classList.contains('active')) {
+                navContainer.classList.remove('active');
+            }
+            if (!sidebar.contains(event.target) && !openBtn.contains(event.target) && sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // --- OBSŁUGA KARUZELI ---
+        const carousel = document.getElementById('portfolioCarousel');
+        const btnNext = document.getElementById('btnNext');
+        const btnPrev = document.getElementById('btnPrev');
+        const getScrollAmount = () => carousel.offsetWidth;
+
+        btnNext.addEventListener('click', () => {
+            carousel.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+        });
+        btnPrev.addEventListener('click', () => {
+            carousel.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+        });
+
+        // --- LOGIKA TŁUMACZEŃ ---
+        const translations = {
+            pl: {
+                "t-form-h2": "Porozmawiajmy o&nbsp;<span class=\"highlight\">Twoim</span> projekcie",
+                "t-form-p": "Potrzebujesz wydajnego sklepu, aplikacji webowej lub cyfryzacji bazy danych? Zostaw wiadomość.",
+                "t-label-name": "Imię lub nazwa firmy",
+                "t-label-email": "Adres E-mail",
+                "t-label-msg": "Opisz krótko, czego potrzebujesz...",
+                "t-label-privacy": "Akceptuję <a href=\"polityka-prywatnosci.html\">politykę prywatności</a>.",
+                "t-btn-submit": "_wyślij_wiadomość",
+                "t-success-p": "Dziękuję za wiadomość!<br><br>Skontaktuję się z Tobą tak szybko, jak to będzie możliwe.",
+                
+                "t-nav-home": "_Strona_główna",
+                "t-nav-port": "_Portfolio",
+                
+                "t-port-title": "Wybrane <span class=\"highlight\">Projekty</span>.",
+                "t-port-desc": "_Oto systemy, które stworzyłem, by pomagać biznesom wchodzić na wyższy poziom.",
+                
+                "t-proj1-desc": "Kompleksowa aplikacja klasy <span class=\"highlight\">SaaS</span> do zarządzania flotą i dostawami. Stworzona od zera, z myślą o minimalizowaniu formalności i maksymalnej optymalizacji czasu pracy kierowców.",
+                "t-proj2-desc": "Nowoczesny, niesamowicie szybki sklep internetowy. Design oparty na minimalizmie połączony z bezbłędną architekturą, <span class=\"highlight\">zwiększył konwersję o 40%</span> względem starego systemu gotowca.",
+                "t-proj3-desc": "Profesjonalna witryna firmowa, zaprojektowana z myślą o budowaniu zaufania i przejrzystej prezentacji usług. Świetna optymalizacja pod urządzenia mobilne i nowoczesny design zaowocowały <span class=\"highlight\">znacznym wzrostem zapytań ofertowych</span> od nowych klientów.",
+                "t-btn-live1": "_zobacz_na_żywo",
+                "t-btn-live2": "_zobacz_na_żywo",
+                "t-btn-live3": "_zobacz_na_żywo",
+
+                "t-foot-copy": "© 2026 Jakub Jąderko. Wszelkie prawa zastrzeżone.",
+                "t-foot-priv": "Polityka prywatności",
+                "t-foot-reg": "Regulamin"
+            },
+            en: {
+                "t-form-h2": "Let's talk about <span class=\"highlight\">your</span> project",
+                "t-form-p": "Need an efficient store, web application, or database digitization? Leave a message.",
+                "t-label-name": "Name or Company Name",
+                "t-label-email": "Email Address",
+                "t-label-msg": "Briefly describe what you need...",
+                "t-label-privacy": "I accept the <a href=\"polityka-prywatnosci.html\">privacy policy</a>.",
+                "t-btn-submit": "_send_message",
+                "t-success-p": "Thank you for your message!<br><br>I will get back to you as soon as possible.",
+                
+                "t-nav-home": "_Home_page",
+                "t-nav-port": "_Portfolio",
+                
+                "t-port-title": "Selected <span class=\"highlight\">Projects</span>.",
+                "t-port-desc": "_Here are the systems I've built to help businesses reach the next level.",
+                
+                "t-proj1-desc": "A comprehensive <span class=\"highlight\">SaaS</span> application for fleet and delivery management. Built from scratch to minimize paperwork and maximize driver time optimization.",
+                "t-proj2-desc": "Modern, incredibly fast online store. Minimalist design combined with flawless architecture <span class=\"highlight\">increased conversion by 40%</span> compared to the old template system.",
+                "t-proj3-desc": "A professional corporate website designed to build trust and clearly present services. Excellent mobile optimization and modern design resulted in a <span class=\"highlight\">significant increase in business inquiries</span> from new clients.",
+                "t-btn-live1": "_view_live",
+                "t-btn-live2": "_view_live",
+                "t-btn-live3": "_view_live",
+
+                "t-foot-copy": "© 2026 Jakub Jąderko. All rights reserved.",
+                "t-foot-priv": "Privacy Policy",
+                "t-foot-reg": "Terms of Service"
+            },
+            de: {
+                "t-form-h2": "Lass uns über <span class=\"highlight\">dein</span> Projekt sprechen",
+                "t-form-p": "Brauchst du einen effizienten Shop, eine Web-App oder Datenbank-Digitalisierung? Hinterlasse eine Nachricht.",
+                "t-label-name": "Name oder Firmenname",
+                "t-label-email": "E-Mail-Adresse",
+                "t-label-msg": "Beschreibe kurz, was du brauchst...",
+                "t-label-privacy": "Ich akzeptiere die <a href=\"polityka-prywatnosci.html\">Datenschutzerklärung</a>.",
+                "t-btn-submit": "_nachricht_senden",
+                "t-success-p": "Vielen Dank für Ihre Nachricht!<br><br>Ich werde mich so schnell wie möglich bei Ihnen melden.",
+                
+                "t-nav-home": "_Startseite",
+                "t-nav-port": "_Portfolio",
+                
+                "t-port-title": "Ausgewählte <span class=\"highlight\">Projekte</span>.",
+                "t-port-desc": "_Hier sind die Systeme, die ich entwickelt habe, um Unternehmen auf die nächste Stufe zu heben.",
+                
+                "t-proj1-desc": "Eine umfassende <span class=\"highlight\">SaaS</span>-Anwendung für das Flotten- und Liefermanagement. Von Grund auf neu entwickelt, um Papierkram zu minimieren und die Fahrerzeit zu optimieren.",
+                "t-proj2-desc": "Moderner, unglaublich schneller Online-Shop. Minimalistisches Design kombiniert mit makelloser Architektur <span class=\"highlight\">steigerte die Konversion um 40%</span> im Vergleich zum alten Vorlagensystem.",
+                "t-proj3-desc": "Eine professionelle Firmenwebsite, die darauf ausgelegt ist, Vertrauen aufzubauen und Dienstleistungen klar zu präsentieren. Hervorragende mobile Optimierung und modernes Design führten zu einer <span class=\"highlight\">deutlichen Steigerung der Kundenanfragen</span>.",
+                "t-btn-live1": "_live_ansehen",
+                "t-btn-live2": "_live_ansehen",
+                "t-btn-live3": "_live_ansehen",
+
+                "t-foot-copy": "© 2026 Jakub Jąderko. Alle Rechte vorbehalten.",
+                "t-foot-priv": "Datenschutzerklärung",
+                "t-foot-reg": "Nutzungsbedingungen"
+            }
+        };
+
+        function setLang(lang) {
+            document.documentElement.lang = lang;
+            localStorage.setItem('siteLanguage', lang);
+            
+            const dict = translations[lang];
+            for (const [id, text] of Object.entries(dict)) {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = text;
+            }
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.dataset.lang === lang) btn.classList.add('active');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('siteLanguage') || 'pl';
+            setLang(savedLang);
+        });
+
+        // --- OBSŁUGA FORMULARZA KONTAKTOWEGO ---
+        const contactFormElement = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('t-btn-submit');
+        const successOverlay = document.getElementById('successOverlay');
+        const contactSidebarPanel = document.getElementById('contactSidebar'); 
+
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbxuknkCYfFr1euwu1sdW-BIDeDLPmGAD6sM2b6eQZOYUOO6VMYgtLhDn4BgujhoPfZS/exec';
+
+        contactFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+
+            const originalBtnText = submitBtn.innerText;
+            submitBtn.innerText = '_wysyłanie...';
+            submitBtn.style.pointerEvents = 'none';
+            submitBtn.style.opacity = '0.7';
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                message: document.getElementById('message').value,
+                privacy: document.getElementById('privacy').checked
+            };
+
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(formData)
+                });
+
+                successOverlay.classList.add('active'); 
+                contactFormElement.reset(); 
+
+                setTimeout(() => {
+                    contactSidebarPanel.classList.remove('active');
+                    setTimeout(() => {
+                        successOverlay.classList.remove('active');
+                        submitBtn.innerText = originalBtnText;
+                        submitBtn.style.pointerEvents = 'auto';
+                        submitBtn.style.opacity = '1';
+                    }, 600); 
+                }, 3000);
+
+            } catch (error) {
+                console.error('Błąd wysyłania:', error);
+                submitBtn.innerText = '_błąd_spróbuj_ponownie';
+                submitBtn.style.borderColor = 'red';
+                
+                setTimeout(() => {
+                    submitBtn.innerText = originalBtnText;
+                    submitBtn.style.pointerEvents = 'auto';
+                    submitBtn.style.opacity = '1';
+                    submitBtn.style.borderColor = 'var(--accent-bordeaux)';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
