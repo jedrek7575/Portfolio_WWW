@@ -1104,6 +1104,44 @@
             opacity: 0.8;
         }
 
+
+
+.cta-portfolio {
+    position: relative; /* TO JEST KLUCZOWE - pozwala działać z-index */
+    z-index: 10;        /* Wystarczy niższa wartość, aby być nad footerem */
+    width: 100%;
+    height: 20vh;
+    display: flex;      /* Używamy flexa do wyśrodkowania treści */
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.275);
+}
+
+.cta-portfolio a {
+    display: flex;      /* Zamienia link w blokowy element */
+    width: 30vw;
+    height: 70%;
+    padding: 2%;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--accent-hover);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 900;
+    transition: 0.3s;
+    background-color: var(--bg-panel);
+    border-radius: 8px;
+    border: 1px solid var(--accent-bordeaux);
+}
+
+.cta-portfolio a:hover {
+    background-color: var(--accent-hover);
+    color: white;
+}
+
+
+
         /* --- STOPKA --- */
         .site-footer {
             width: 100%;
@@ -1433,6 +1471,24 @@
             .story-header-2 h2 { font-size: 1.8rem; }
             .story-header-2 p { font-size: 1rem; }
 
+            .cta-portfolio a {
+    display: flex;      /* Zamienia link w blokowy element */
+    width: 70vw;
+    height: 70%;
+    padding: 2%;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--accent-hover);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 900;
+    transition: 0.3s;
+    background-color: var(--bg-panel);
+    border-radius: 8px;
+    border: 1px solid var(--accent-bordeaux);
+}
+
             .site-footer {
                 flex-direction: column;
                 padding: 3rem 1.5rem;
@@ -1662,6 +1718,11 @@
                 </div>
 
             </section>
+
+            <div class="cta-portfolio">
+                <a href="portfolio.html">_Zobacz moje realizacje</a>
+
+            </div>
 
     </main>
 
